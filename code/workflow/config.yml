@@ -6,12 +6,11 @@ singularity_bind_paths: '$(pwd),$CDATA'
 # cactus section
 # --------------
 alignment_name: 'carnivora_set'
-refName: mirang
+refName: arcgaz
 
 species:
   - acijub
   - ailmel
-  - arcgaz
   - calurs
   - canlup
   - carcar
@@ -38,6 +37,7 @@ species:
   - marzib
   - melmel
   - melcap
+  - mirang
   - mirleo
   - munmun
   - muserm

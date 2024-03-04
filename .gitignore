@@ -1,6 +1,9 @@
 # exclude hidden R profile files
 .Rproj.user
 
+# vim lock files
+*.swp
+
 # exclude {renv} directory
 renv/
 
