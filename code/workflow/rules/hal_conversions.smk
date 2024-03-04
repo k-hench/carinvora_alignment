@@ -22,7 +22,7 @@ snakemake --jobs 50 \
 """
 
 SPEC_REF = "arcgaz"
-SEPC_ANC  = "Anc41"
+SPEC_ANC  = "Anc41"
 MSCAFS = [ "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "x"]
 s_bind_paths="$CDATA"
 
