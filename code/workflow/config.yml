@@ -1,0 +1,100 @@
+# General setup
+#--------------
+# the bind-path list needs to start with a ',' to be appended properly
+singularity_bind_paths: '$(pwd),$CDATA'
+
+# cactus section
+# --------------
+alignment_name: 'carnivora_set'
+refName: mirang
+
+species:
+  - acijub
+  - ailmel
+  - arcgaz
+  - calurs
+  - canlup
+  - carcar
+  - chrbra
+  - crocro
+  - cryfer
+  - eirbar
+  - enhlut
+  - eumjub
+  - felcat
+  - felcha
+  - felnig
+  - halgry
+  - helpar
+  - hyahya
+  - leogeo
+  - lepwed
+  - loncan
+  - lutlut
+  - lycpic
+  - lyncan
+  - lynpar
+  - lynruf
+  - marzib
+  - melmel
+  - melcap
+  - mirleo
+  - munmun
+  - muserm
+  - musnig
+  - musniv
+  - musput
+  - neosch
+  - nycpro
+  - odoros
+  - panleo
+  - panonc
+  - panpar
+  - pantig
+  - panunc
+  - parher
+  - phovit
+  - potfla
+  - priben
+  - priiri
+  - priviv
+  - prolot
+  - ptebra
+  - pumcon
+  - pumyag
+  - speven
+  - spigra
+  - sursur
+  - taxtax
+  - treorn
+  - ursame
+  - ursarc
+  - ursmar
+  - ursthi
+  - vulfer
+  - vullag
+  - vulvul
+  - zalcal
+
+speciesTree: "((((((((pumcon,pumyag),acijub),(lynruf,(lyncan,lynpar))),((((priiri,priben),priviv),carcar),(felnig,(felcat,felcha)))),leogeo),(pantig,(((panleo,panpar),panonc),panunc))),(parher,((cryfer,((munmun,helpar),sursur)),(hyahya,crocro)))),((((canlup,lycpic),(chrbra,speven)),(nycpro,((vulvul,vulfer),vullag))),(((((taxtax,(((((((lutlut,enhlut),loncan),ptebra),((musniv,(musput,musnig)),muserm)),(eirbar,marzib)),melmel),melcap)),(potfla,prolot)),spigra),((odoros,(calurs,(arcgaz,(eumjub,zalcal)))),(((lepwed,(mirleo,mirang)),neosch),(phovit,halgry)))),(ailmel,(treorn,((ursame,ursthi),(ursmar,ursarc)))))));"
+
+# technical parameters
+# cactus_sif:
+# apptainer pull docker://quay.io/comparative-genomics-toolkit/cactus:v2.5.1
+cactus_sif: '$CDATA/apptainer_local/cactus_v2.5.1.sif'
+cactus_cores: "24"
+
+# optional repeat masking
+need_masking:
+#  - name
+#  - name2
+
+# local paths to stored sif files for offline usage:
+# apptainer pull docker://khench/popgen_suite:v0.2
+sif_popgen: '$CDATA/apptainer_local/popgen_suite_v0.2.sif'
+# apptainer pull docker://khench/popsim_suite:v0.2
+sif_ml: '$CDATA/apptainer_local/re_load_v0.2.sif'
+# apptainer pull docker://lindenb/jvarkit:1b2aedf24
+sif_jvar: '$CDATA/apptainer_local/jvarkit_1b2aedf24.sif'
+# singularity container containg all conda environments defined in `envs/` (only needed to trick our HPC into accepting conda paths) 
+sif_conda: '$CDATA/apptainer_local/conda_byoe.sif'

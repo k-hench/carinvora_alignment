@@ -1,0 +1,20 @@
+# exclude hidden R profile files
+.Rproj.user
+
+# exclude {renv} directory
+renv/
+
+# exclude snakemake housekeeping and logs
+code/.snakemake
+code/logs
+
+code/sh/cactus
+
+# exclude results by default
+results/*
+
+# exclude large data 
+# (explicitly define tracked files)
+data/*
+!data/carnivora_ref_genomes.tsv
+!data/carnivora_list.nwk
