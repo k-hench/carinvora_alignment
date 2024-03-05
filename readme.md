@@ -1,4 +1,4 @@
-# carnivorm cactus alignment
+# carnivora cactus alignment
 
 Author: Kosmas Hench
 
