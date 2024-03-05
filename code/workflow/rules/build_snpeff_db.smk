@@ -3,7 +3,7 @@ snakemake --rerun-triggers mtime -n all_ml_snpeff
 snakemake --dag  --rerun-triggers mtime -R all_ml_snpeff | dot -Tsvg > ../results/img/control/dag_snpeff_db.svg
 snakemake --rulegraph all_ml_snpeff | dot -Tsvg > ../results/img/control/rules_snpeff_db.svg
 
-snakemake --jobs 60 \
+snakemake --jobs 50 \
   --latency-wait 30 \
   -p \
   --default-resources mem_mb=51200 threads=1 \
@@ -12,14 +12,13 @@ snakemake --jobs 60 \
   --use-conda \
   --rerun-triggers mtime \
   --cluster '
-    qsub \
-      -V -cwd \
-      -P fair_share \
-      -l idle=1 \
-      -l si_flag=1 \
-      -pe multislot {threads} \
-      -l vf={resources.mem_mb}' \
-  --jn job_ml.{name}.{jobid}.sh \
+    sbatch \
+      --export ALL \
+      -n {threads} \
+      -e logs/{name}.{jobid}.err \
+      -o logs/{name}.{jobid}.out \
+      --mem={resources.mem_mb}' \
+  --jn job_c.{name}.{jobid}.sh \
   -R all_ml_snpeff
 """
 
