@@ -38,7 +38,7 @@ rule hal_to_maf:
     log: "logs/hal_to_maf_{name}_{mscaf}.log"
     params:
       sif = c_cactus,
-      js = "results/cactus/scratch/{name}/",
+      js = "../results/cactus/scratch/{name}/",
       local_js = "js_{name}_{mscaf}",
       run = "run_{name}_{mscaf}"
     shell:
