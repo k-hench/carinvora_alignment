@@ -36,7 +36,7 @@ rule create_snpeff_config:
     shell:
       """
       echo "# Arctocephalus gazella genome, version arcGaz4_h1" > {output.conf}
-      echo "arcgaz.4h1.genome : {SEPC_REF}" >> {output.conf}
+      echo "arcgaz.4h1.genome : {SPEC_REF}" >> {output.conf}
       """
 
 rule gunzip_fa:
@@ -87,9 +87,9 @@ rule extract_prot:
         -f {input.fa} \
         -st pep \
         -d complete \
-        -o {params.pep_prefix}/{SEPC_REF}
+        -o {params.pep_prefix}/{SPEC_REF}
       
-      mv {params.pep_prefix}/{SEPC_REF}_pep.fa {params.pep_prefix}/protein.fa
+      mv {params.pep_prefix}/{SPEC_REF}_pep.fa {params.pep_prefix}/protein.fa
       gzip {params.pep_prefix}/protein.fa
       """
 
@@ -156,7 +156,7 @@ rule create_snpeff_db:
 #           -no-upstream \
 #           -no-utr \
 #           -v \
-#           {SEPC_REF} {wildcards.vcf_pre}.vcf.gz > {code_dir}/{output.snpef_vcf}
+#           {SPEC_REF} {wildcards.vcf_pre}.vcf.gz > {code_dir}/{output.snpef_vcf}
 #       """
 # 
 # rule bgzip_vcf:
