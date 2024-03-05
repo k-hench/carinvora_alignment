@@ -43,7 +43,7 @@ rule gunzip_fa:
     input:
       fa = REF_GENOME
     output:
-      fa = temp( REF_GENOME.strip( ".gz" ) )
+      fa = temp( ".." + REF_GENOME.strip( ".gz" ) )
     script:
       """
       zcat {input.fa} > {output.fa}
@@ -51,7 +51,7 @@ rule gunzip_fa:
 
 rule extract_cds:
     input:
-      fa = REF_GENOME.strip( ".gz" ),
+      fa = ".." + REF_GENOME.strip( ".gz" ),
       gff = GFF_FILE
     output:
       cds = "../results/snp_eff/data/{ref}/cds.fa.gz".format( ref = SPEC_REF )
@@ -73,7 +73,7 @@ rule extract_cds:
 
 rule extract_prot:
     input:
-      fa = REF_GENOME.strip( ".gz" ), 
+      fa = ".." + REF_GENOME.strip( ".gz" ), 
       gff = GFF_FILE
     output:
       pep = "../results/snp_eff/data/{ref}/protein.fa.gz".format( ref = SPEC_REF )
@@ -95,7 +95,7 @@ rule extract_prot:
 
 rule create_snpeff_db:
     input:
-      fa = REF_GENOME.strip( ".gz" ),
+      fa = ".." + REF_GENOME.strip( ".gz" ),
       gtf = GTF_FILE,
       cds = "../results/snp_eff/data/{ref}/cds.fa.gz".format( ref = SPEC_REF ),
       prot = "../results/snp_eff/data/{ref}/protein.fa.gz".format( ref = SPEC_REF ),
