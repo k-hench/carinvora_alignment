@@ -44,7 +44,7 @@ rule gunzip_fa:
       fa = REF_GENOME
     output:
       fa = temp( ".." + REF_GENOME.strip( ".gz" ) )
-    script:
+    shell:
       """
       zcat {input.fa} > {output.fa}
       """
