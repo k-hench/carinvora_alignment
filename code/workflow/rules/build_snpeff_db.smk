@@ -22,8 +22,8 @@ snakemake --jobs 50 \
   -R all_ml_snpeff
 """
 
-GTF_FILE = "../data/genomes/annotation/arcGaz4_h1_annotation.gtf.gz"
-GFF_FILE = "../data/genomes/annotation/arcGaz4_h1_annotation.gff3.gz"
+GTF_FILE = "../data/genomes/annotation/arcGaz4_h1_relabel_annotation.gtf.gz"
+GFF_FILE = "../data/genomes/annotation/arcGaz4_h1_relabel_annotation.gff3.gz"
 
 rule all_ml_snpeff:
     input: 
@@ -41,9 +41,9 @@ rule create_snpeff_config:
 
 rule gunzip_fa:
     input:
-      fa = REF_GENOME
+      fa = ALT_GENOME
     output:
-      fa = temp( ".." + REF_GENOME.strip( ".gz" ) )
+      fa = temp( ".." + ALT_GENOME.strip( ".gz" ) )
     shell:
       """
       zcat {input.fa} > {output.fa}
@@ -51,7 +51,7 @@ rule gunzip_fa:
 
 rule extract_cds:
     input:
-      fa = ".." + REF_GENOME.strip( ".gz" ),
+      fa = ".." + ALT_GENOME.strip( ".gz" ),
       gff = GFF_FILE
     output:
       cds = "../results/snp_eff/data/{ref}/cds.fa.gz".format( ref = SPEC_REF )
@@ -73,7 +73,7 @@ rule extract_cds:
 
 rule extract_prot:
     input:
-      fa = ".." + REF_GENOME.strip( ".gz" ), 
+      fa = ".." + ALT_GENOME.strip( ".gz" ), 
       gff = GFF_FILE
     output:
       pep = "../results/snp_eff/data/{ref}/protein.fa.gz".format( ref = SPEC_REF )
@@ -95,7 +95,7 @@ rule extract_prot:
 
 rule create_snpeff_db:
     input:
-      fa = ".." + REF_GENOME.strip( ".gz" ),
+      fa = ".." + ALT_GENOME.strip( ".gz" ),
       gtf = GTF_FILE,
       cds = "../results/snp_eff/data/{ref}/cds.fa.gz".format( ref = SPEC_REF ),
       prot = "../results/snp_eff/data/{ref}/protein.fa.gz".format( ref = SPEC_REF ),
