@@ -36,7 +36,7 @@ rule create_snpeff_config:
     shell:
       """
       echo "# Arctocephalus gazella genome, version arcGaz4_h1" > {output.conf}
-      echo "arcgaz.4h1.genome : {SPEC_REF}" >> {output.conf}
+      echo "arcgaz.genome : {SPEC_REF}" >> {output.conf}
       """
 
 rule gunzip_fa:
