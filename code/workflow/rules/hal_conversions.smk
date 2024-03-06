@@ -28,7 +28,7 @@ s_bind_paths="$CDATA"
 rule convert_hal:
     input: 
       maf = expand("../results/maf/{name}_{mscaf}.maf", name = P_NAME, mscaf = MSCAFS),
-      snps = expand("../results/snps/{name}_{mscaf}.tsv", name = P_NAME, mscaf = MSCAFS),
+      snps = expand("../results/anc_allele/{name}_{mscaf}.tsv.gz", name = P_NAME, mscaf = MSCAFS),
 
 rule hal_to_maf:
     input:
@@ -69,7 +69,7 @@ rule hal_to_snps:
     input:
       hal = '../results/cactus/{name}.hal'.format(name = P_NAME)
     output:
-      tsv = "../results/snps/{name}_{mscaf}.tsv"
+      tsv = "../results/anc_allele/{name}_{mscaf}.tsv"
     container: c_cactus
     shell:
       """
@@ -80,4 +80,14 @@ rule hal_to_snps:
         --noDupes \
         --unique \
         --tsv {output.tsv}
+      """
+
+rule pack_ancestal_tsv:
+    input:
+      tsv = "../results/anc_allele/{name}_{mscaf}.tsv"
+    output:
+      gz = "../results/anc_allele/{name}_{mscaf}.tsv.gz"
+    shell:
+      """
+      gzip {input.fa}
       """
