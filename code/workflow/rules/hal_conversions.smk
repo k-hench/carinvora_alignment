@@ -89,5 +89,5 @@ rule pack_ancestal_tsv:
       gz = "../results/anc_allele/{name}_{mscaf}.tsv.gz"
     shell:
       """
-      gzip {input.fa}
+      gzip {input.tsv}
       """
