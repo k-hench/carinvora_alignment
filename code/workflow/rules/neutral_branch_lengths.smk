@@ -116,7 +116,7 @@ rule negative_coverage_mask:
 # (we want to exclude all CDS)
 rule create_cds_mask:
     input:
-      gff = "../data/genomes/arcgaz_anc_h1.annotation.gff.gz"
+      gff = "../data/genomes/annotation/arcGaz4_h1_annotation.gff3.gz"
     output:
       bed = "../results/neutral_tree/masks/cds_{mscaf}.bed.gz"
     shell:
