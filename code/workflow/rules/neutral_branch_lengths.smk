@@ -150,7 +150,7 @@ rule proto_windows:
 
 rule shuffle_windows:
     input:
-      genome = "../data/genomes/arcgaz_anc_h1.genome",
+      genome = "../data/genomes/arcGaz4_h1.genome",
       bed_cds = "../results/neutral_tree/masks/cds.bed.gz",
       bed_neg_cov = "../results/neutral_tree/cov/filtered/whole_genome_exclude.bed.gz",
       win_proto = "../results/neutral_tree/win/proto.bed.gz"
