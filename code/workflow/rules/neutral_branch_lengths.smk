@@ -27,7 +27,7 @@ rule create_neutral_tree:
     input:
       win_bed = expand( "../results/neutral_tree/win/windows_{mscaf}.bed.gz", mscaf = SCFS ),
       tree = "../results/neutral_tree/multifa/combined_windows.fa.treefile",
-      gerp = expand( "../results/pinniped/maf/pinniped_set_{mscaf_nr}.maf.rates", mscaf_nr = MSCAFS )
+      gerp = expand( "../results/maf/carnivora_set_{mscaf_nr}.maf.rates", mscaf_nr = MSCAFS )
 
 # we need to determine what part of the genome is covered 
 # by a the alignment of all other (tip) species
@@ -205,7 +205,7 @@ def scaf_to_nr(wildcards):
 
 rule maf_to_fasta:
     input:
-      maf = lambda wc: "../results/maf/pinniped_set_" + scaf_to_nr(wc) + ".maf",
+      maf = lambda wc: "../results/maf/" + P_NAME + "_" + scaf_to_nr(wc) + ".maf",
       conf = "../data/maffilter_templ.txt",
       windows = "../results/neutral_tree/win/windows_{mscaf}.bed.gz",
       win_n_scaf = "../results/neutral_tree/win/win_n_scaf.txt"
@@ -272,14 +272,14 @@ rule reroot_tree:
 
 rule call_gerp:
     input:
-      maf = "../results/pinniped/maf/pinniped_set_{mscaf_nr}.maf",
+      maf = "../results/maf/{name}_{mscaf_nr}.maf",
       tree = "../results/neutral_tree/rerooted.tree"
     output:
-      rates = "../results/pinniped/maf/pinniped_set_{mscaf_nr}.maf.rates"
+      rates = "../results/maf/{name}_{mscaf_nr}.maf.rates"
     params:
       refname = SPEC_REF 
     conda: "msa_phast"
-    log: "logs/gerp_{mscaf_nr}.log"
+    log: "logs/gerp_{name}_{mscaf_nr}.log"
     shell:
       """
       gerpcol -t {input.tree} -f {input.maf} -e {params.refname} -j -z -x ".rates" &> {log}
