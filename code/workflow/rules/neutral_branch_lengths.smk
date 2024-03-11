@@ -85,7 +85,7 @@ rule filter_maf_coverage:
    input:
       bed = "../results/neutral_tree/cov/{mscaf}.collapsed.bed.gz"
    output:
-     bed = "../results/neutral_tree/cov/filtered/{mscaf}.bed.gz"
+     bed = "../results/neutral_tree/cov/filtered/by_scaf/{mscaf}.bed.gz"
    params:
      min_cov = 65
    shell:
@@ -98,7 +98,7 @@ rule filter_maf_coverage:
 rule negative_coverage_mask:
     input:
       genome = "../data/genomes/arcgaz_anc_h1.genome",
-      bed = expand( "../results/neutral_tree/cov/filtered/{mscaf}.bed.gz", mscaf = SCFS )
+      bed = expand( "../results/neutral_tree/cov/filtered/by_scaf/{mscaf}.bed.gz", mscaf = SCFS )
     output:
       bed_cov = "../results/neutral_tree/cov/filtered/whole_genome.bed.gz",
       bed_genome = "../data/genomes/arcgaz_anc_h1.bed",
