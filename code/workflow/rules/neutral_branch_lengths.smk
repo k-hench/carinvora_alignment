@@ -97,11 +97,11 @@ rule filter_maf_coverage:
 
 rule negative_coverage_mask:
     input:
-      genome = "../data/genomes/arcgaz_anc_h1.genome",
+      genome = "../data/genomes/arcGaz4_h1.genome",
       bed = expand( "../results/neutral_tree/cov/filtered/by_scaf/{mscaf}.bed.gz", mscaf = SCFS )
     output:
       bed_cov = "../results/neutral_tree/cov/filtered/whole_genome.bed.gz",
-      bed_genome = "../data/genomes/arcgaz_anc_h1.bed",
+      bed_genome = "../data/genomes/arcGaz4_h1.bed",
       bed_neg_cov = "../results/neutral_tree/cov/filtered/whole_genome_exclude.bed.gz"
     container: c_conda
     conda: "popgen_basics"
