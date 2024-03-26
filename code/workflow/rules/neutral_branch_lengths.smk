@@ -19,8 +19,8 @@ snakemake --jobs 50 \
         --jn job_c.{name}.{jobid}.sh \
         -R create_neutral_tree
 """
-WIN_SIZE = 1000
-WIN_N = 5000
+WIN_SIZE = 5000
+WIN_N = 20000
 SCFS = expand( "mscaf_a1_{scf}", scf = MSCAFS)
 
 rule create_neutral_tree:
@@ -28,6 +28,9 @@ rule create_neutral_tree:
       win_bed = expand( "../results/neutral_tree/win/windows_{mscaf}.bed.gz", mscaf = SCFS ),
       tree = "../results/neutral_tree/multifa/combined_windows.fa.treefile",
       gerp = expand( "../results/maf/carnivora_set_{mscaf_nr}.maf.rates", mscaf_nr = MSCAFS )
+
+rule create_neutral_window_mafs:
+    input: expand( "../results/neutral_tree/windows/{mscaf}.maf.gz", mscaf_nr = MSCAFS )
 
 # we need to determine what part of the genome is covered 
 # by a the alignment of all other (tip) species
@@ -87,7 +90,7 @@ rule filter_maf_coverage:
    output:
      bed = "../results/neutral_tree/cov/filtered/by_scaf/{mscaf}.bed.gz"
    params:
-     min_cov = 65
+     min_cov = 62
    shell:
      """
      zcat {input.bed} | \
@@ -210,7 +213,8 @@ rule maf_to_fasta:
       windows = "../results/neutral_tree/win/windows_{mscaf}.bed.gz",
       win_n_scaf = "../results/neutral_tree/win/win_n_scaf.txt"
     output:
-      fasta = "../results/neutral_tree/multifa/{mscaf}.fa.gz"
+      fasta = touch( "../results/neutral_tree/windows/{mscaf}.fa.gz" ),
+      maf = "../results/neutral_tree/windows/{mscaf}.maf.gz"
     params:
       ref_spec = SPEC_REF,
       nr = lambda wc: scaf_to_nr(wc)
@@ -224,6 +228,7 @@ rule maf_to_fasta:
       maffilter param={input.conf} NR={params.nr} DATA={wildcards.mscaf} FASIZE=${{BP_WIN}} REF_SPEC={params.ref_spec} &> {log}
       """
 
+# needs update
 rule single_multi_fasta:
     input:
       fas = expand( "../results/neutral_tree/multifa/{mscaf}.fa.gz", mscaf = SCFS )
