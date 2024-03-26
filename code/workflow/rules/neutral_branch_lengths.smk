@@ -19,8 +19,8 @@ snakemake --jobs 50 \
         --jn job_c.{name}.{jobid}.sh \
         -R create_neutral_tree
 """
-WIN_SIZE = 5000
-WIN_N = 20000
+WIN_SIZE = 1000
+WIN_N = 100000
 SCFS = expand( "mscaf_a1_{scf}", scf = MSCAFS)
 
 rule create_neutral_tree:
@@ -90,7 +90,7 @@ rule filter_maf_coverage:
    output:
      bed = "../results/neutral_tree/cov/filtered/by_scaf/{mscaf}.bed.gz"
    params:
-     min_cov = 62
+     min_cov = 55
    shell:
      """
      zcat {input.bed} | \
