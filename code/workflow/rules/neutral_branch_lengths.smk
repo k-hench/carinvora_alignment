@@ -209,7 +209,7 @@ def scaf_to_nr(wildcards):
 rule maf_to_fasta:
     input:
       maf = lambda wc: "../results/maf/" + P_NAME + "_" + scaf_to_nr(wc) + ".maf",
-      conf = "../data/maffilter_templ.txt",
+      conf = "../data/maffilter_templ_maf.txt",
       windows = "../results/neutral_tree/win/windows_{mscaf}.bed.gz",
       win_n_scaf = "../results/neutral_tree/win/win_n_scaf.txt"
     output:
