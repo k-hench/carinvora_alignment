@@ -27,10 +27,10 @@ rule create_neutral_tree:
     input:
       win_bed = expand( "../results/neutral_tree/win/windows_{mscaf}.bed.gz", mscaf = SCFS ),
       tree = "../results/neutral_tree/multifa/combined_windows.fa.treefile",
-      gerp = expand( "../results/maf/carnivora_set_{mscaf_nr}.maf.rates", mscaf = SCFS )
+      gerp = expand( "../results/maf/carnivora_set_{mscaf_nr}.maf.rates", mscaf_nr = MSCAFS )
 
 rule create_neutral_window_mafs:
-    input: expand( "../results/neutral_tree/windows/{mscaf}.maf.gz", mscaf = MSCAFS )
+    input: expand( "../results/neutral_tree/windows/{mscaf}.maf.gz", mscaf = SCFS )
 
 # we need to determine what part of the genome is covered 
 # by a the alignment of all other (tip) species
