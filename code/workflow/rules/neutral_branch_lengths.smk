@@ -90,7 +90,7 @@ rule filter_maf_coverage:
    output:
      bed = "../results/neutral_tree/cov/filtered/by_scaf/{mscaf}.bed.gz"
    params:
-     min_cov = 55
+     min_cov = 0
    shell:
      """
      zcat {input.bed} | \
