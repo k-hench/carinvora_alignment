@@ -12,8 +12,7 @@ maf.filter= \
         feature.type=all,                                                \
         complete=no,                                                     \
         ignore_strand=no),                                               \
-    Concatenate(minimum_size=$(FASIZE), ref_species=$(REF_SPEC)),        \
-    Output(                                                    \
+    Output(                                                              \
         file=../results/neutral_tree/windows/$(DATA).maf.gz,              \
         compression=gzip,                                                \
         mask=no)
