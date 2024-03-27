@@ -184,18 +184,15 @@ rule check_window_coverage:
       cov =  expand( "../results/neutral_tree/cov/filtered/by_scaf/{mscaf}.bed.gz", mscaf = SCFS )
     output:
       win_with_cov = "../results/neutral_tree/win/windows_cov_stats.tsv.gz"
-    params:
-      cov_dir = "../results/neutral_tree/cov/filtered/by_scaf/"
     container: c_conda
     conda: "popgen_basics"
     log: "logs/win_cov.log"
     shell:
       """
-      echo {input.cov} >{output.win_with_cov}
-      # bedtools intersect \
-      #  -a {input.win} \
-      #  -b {params.cov_dir}mscaf_a1_*collapsed.bed.gz \
-      #  -wa -wb | gzip > {output.win_with_cov}
+      bedtools intersect \
+       -a {input.win} \
+       -b {input.cov} \
+       -wa -wb | gzip > {output.win_with_cov}
       """
 
 
