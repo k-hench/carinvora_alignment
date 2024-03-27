@@ -121,7 +121,7 @@ rule create_cds_mask:
     input:
       gff = "../data/genomes/annotation/arcGaz4_h1_annotation.gff3.gz"
     output:
-      bed = "../results/neutral_tree/masks/cds_{mscaf}.bed.gz"
+      bed = "../results/neutral_tree/masks/masks/cds_{mscaf}.bed.gz"
     shell:
       """
       zgrep "CDS" {input.gff} | \
@@ -155,11 +155,8 @@ rule shuffle_windows:
     input:
       genome = "../data/genomes/arcGaz4_h1.genome",
       bed_cds = "../results/neutral_tree/masks/cds.bed.gz",
-      bed_neg_cov = "../results/neutral_tree/cov/filtered/whole_genome_exclude.bed.gz",
       win_proto = "../results/neutral_tree/win/proto.bed.gz"
     output:
-      bed_tmp = temp( "../results/neutral_tree/win/exclude_tmp.bed.gz" ),
-      bed_exclude = "../results/neutral_tree/win/exclude.bed.gz",
       bed_win = "../results/neutral_tree/win/windows.bed.gz",
       win_n_scaf = "../results/neutral_tree/win/win_n_scaf.txt"
     params:
@@ -169,16 +166,10 @@ rule shuffle_windows:
     log: "logs/win.log"
     shell:
       """
-      zcat {input.bed_cds} {input.bed_neg_cov} | \
-        sort -k 1,1 -k2,2n | \
-        gzip > {output.bed_tmp}
-
-      bedtools merge -i {output.bed_tmp} | gzip > {output.bed_exclude}
-
       bedtools shuffle \
         -i {input.win_proto} \
         -g {input.genome} \
-        -excl {output.bed_exclude} \
+        -excl {input.bed_cds} \
         -seed {params.win_seed} \
         -noOverlapping 2>> {log} | \
         sort -k 1,1 -k2,2n | \
