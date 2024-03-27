@@ -13,9 +13,7 @@ maf.filter= \
         complete=no,                                                     \
         ignore_strand=no),                                               \
     Concatenate(minimum_size=$(FASIZE), ref_species=$(REF_SPEC)),        \
-    OutputAlignments(                                                    \
+    Output(                                                    \
         file=../results/neutral_tree/windows/$(DATA).maf.gz,              \
         compression=gzip,                                                \
-        format=Maf,                                                    \
-        mask=no,                                                         \
-        coordinates=no)
+        mask=no)
