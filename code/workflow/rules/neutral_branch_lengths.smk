@@ -178,6 +178,26 @@ rule shuffle_windows:
       for k in {SCFS}; do WN=$(zgrep ${{k}} {output.bed_win} | wc -l); echo -e "${{k}}\t${{WN}}" >> {output.win_n_scaf}; done 
       """
 
+rule check_window_coverage:
+    input: 
+      win = "../results/neutral_tree/win/windows.bed.gz",
+      cov =  expand( "../results/neutral_tree/cov/filtered/by_scaf/{mscaf}.bed.gz", mscaf = SCFS )
+    output:
+      win_with_cov = "../results/neutral_tree/win/windows_cov_stats.tsv.gz"
+    params:
+      cov_dir = "../results/neutral_tree/cov/filtered/by_scaf/"
+    container: c_conda
+    conda: "popgen_basics"
+    log: "logs/win_cov.log"
+    shell:
+      """
+      bedtools intersect \
+        -a {input.win} \
+        -b {params.cov_dir}mscaf_a1_*collapsed.bed.gz \
+        -wa -wb | gzip > {output.win_with_cov}
+      """
+
+
 rule windows_by_scaffold:
     input:
       bed_win = "../results/neutral_tree/win/windows.bed.gz"
