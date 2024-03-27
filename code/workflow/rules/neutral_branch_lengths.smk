@@ -90,7 +90,7 @@ rule filter_maf_coverage:
    output:
      bed = "../results/neutral_tree/cov/filtered/by_scaf/{mscaf}.bed.gz"
    params:
-     min_cov = 0
+     min_cov = 55
    shell:
      """
      zcat {input.bed} | \
@@ -181,7 +181,7 @@ rule shuffle_windows:
 rule check_window_coverage:
     input: 
       win = "../results/neutral_tree/win/windows.bed.gz",
-      cov =  expand( "../results/neutral_tree/cov/filtered/by_scaf/{mscaf}.bed.gz", mscaf = SCFS )
+      cov =  expand( "../results/neutral_tree/cov/{mscaf}.collapsed.bed.gz", mscaf = SCFS )
     output:
       win_with_cov = "../results/neutral_tree/win/windows_cov_stats.tsv.gz"
     container: c_conda
