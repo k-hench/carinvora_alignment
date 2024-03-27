@@ -191,10 +191,11 @@ rule check_window_coverage:
     log: "logs/win_cov.log"
     shell:
       """
-      bedtools intersect \
-        -a {input.win} \
-        -b {params.cov_dir}mscaf_a1_*collapsed.bed.gz \
-        -wa -wb | gzip > {output.win_with_cov}
+      echo {input.cov} >{output.win_with_cov}
+      # bedtools intersect \
+      #  -a {input.win} \
+      #  -b {params.cov_dir}mscaf_a1_*collapsed.bed.gz \
+      #  -wa -wb | gzip > {output.win_with_cov}
       """
 
 
