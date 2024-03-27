@@ -32,6 +32,11 @@ rule create_neutral_tree:
 rule create_neutral_window_mafs:
     input: expand( "../results/neutral_tree/windows/{mscaf}.maf.gz", mscaf = SCFS )
 
+
+rule convert_hal_to_maf:
+    input: 
+      maf = expand("../results/maf/{name}_{mscaf}.maf", name = P_NAME, mscaf = MSCAFS)
+
 # we need to determine what part of the genome is covered 
 # by a the alignment of all other (tip) species
 # first step for this is to create a wig file from the hal
