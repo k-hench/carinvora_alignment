@@ -125,7 +125,7 @@ rule create_cds_mask:
     input:
       gff = "../data/genomes/annotation/arcGaz4_h1_annotation.gff3.gz"
     output:
-      bed = "../results/neutral_tree/masks/masks/cds_{mscaf}.bed.gz"
+      bed = "../results/neutral_tree/masks/cds_{mscaf}.bed.gz"
     shell:
       """
       zgrep "CDS" {input.gff} | \
