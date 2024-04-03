@@ -236,7 +236,7 @@ rule subset_window_maf:
       """
       py/intersect_maf_bed \
         --maf {input.maf} \
-        --bed {input.bed} \
+        --bed {input.bed_windows} \
         --ref {params.ref_spec} \
         --output {output.maf}
       """
