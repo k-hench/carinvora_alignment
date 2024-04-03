@@ -206,7 +206,7 @@ rule windows_by_scaffold:
       bed_win = "../results/neutral_tree/win/windows_{mscaf}.bed.gz"
     shell:
       """
-      zgrep {wildcards.mscaf} {input.bed_win} > {output.bed_win}
+      zgrep {wildcards.mscaf} {input.bed_win} | gzip > {output.bed_win}
       """
 
 def scaf_to_nr(wildcards):
