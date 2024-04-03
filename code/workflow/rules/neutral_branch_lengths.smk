@@ -204,13 +204,9 @@ rule windows_by_scaffold:
       bed_win = "../results/neutral_tree/win/windows.bed.gz"
     output:
       bed_win = "../results/neutral_tree/win/windows_{mscaf}.bed.gz"
-    params:
-      bed_prefix = "../results/neutral_tree/win/windows_{mscaf}.bed"
     shell:
       """
-      echo 'track type=bedGraph name="BedGraph Format" description="BedGraph format"' > {params.bed_prefix}
-      zgrep {wildcards.mscaf} {input.bed_win} | awk '{{print $0"\t0"}}' >> {params.bed_prefix}
-      gzip {params.bed_prefix}
+      zgrep {wildcards.mscaf} {input.bed_win} > {output.bed_win}
       """
 
 def scaf_to_nr(wildcards):
