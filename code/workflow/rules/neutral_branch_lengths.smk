@@ -245,7 +245,7 @@ rule maf_to_fasta:
     input:
       maf = "../results/neutral_tree/windows/{mscaf}.maf.gz"
     output:
-      fa = "../results/neutral_tree/windows/{mscaf}.fa.gz"
+      fa = "../results/neutral_tree/multifa/{mscaf}.fa.gz"
     params:
       sample_order = ','.join(SPEC_ALL)
     log: "logs/maf2fasta_{mscaf}.log"
