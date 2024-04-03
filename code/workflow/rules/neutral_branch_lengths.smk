@@ -279,7 +279,7 @@ rule single_multi_fasta:
         -o {output.prep} \
         --base-report > {output.report} 
         
-      fold -w 80 {output.prep} > {ouput.fa}
+      fold -w 80 {output.prep} > {output.fa}
       """
 
 rule estimate_branchlengths:
