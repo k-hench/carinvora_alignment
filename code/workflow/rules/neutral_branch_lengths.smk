@@ -276,10 +276,10 @@ rule single_multi_fasta:
       py/concat_fastas \
         tests/fa/test1.fa tests/fa/test2.fa \
         -s {params.sample_order} \
-        -o {ouput.prep} \
+        -o {output.prep} \
         --base-report > {output.report} 
         
-      fold -w 80 {ouput.prep} > {ouput.fa}
+      fold -w 80 {output.prep} > {ouput.fa}
       """
 
 rule estimate_branchlengths:
