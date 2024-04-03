@@ -32,7 +32,6 @@ rule create_neutral_tree:
 rule create_neutral_window_mafs:
     input: expand( "../results/neutral_tree/windows/{mscaf}.maf.gz", mscaf = SCFS )
 
-
 rule convert_hal_to_maf:
     input: 
       maf = expand("../results/maf/{name}_{mscaf}.maf", name = P_NAME, mscaf = MSCAFS)
@@ -200,7 +199,6 @@ rule check_window_coverage:
        -wa -wb | gzip > {output.win_with_cov}
       """
 
-
 rule windows_by_scaffold:
     input:
       bed_win = "../results/neutral_tree/win/windows.bed.gz"
@@ -220,26 +218,46 @@ def scaf_to_nr(wildcards):
   out = re.findall(pattern, wildcards.mscaf)
   return out[0]
 
-rule maf_to_fasta:
+rule subset_window_maf:
     input:
       maf = lambda wc: "../results/maf/" + P_NAME + "_" + scaf_to_nr(wc) + ".maf",
       conf = "../data/maffilter_templ_maf.txt",
-      windows = "../results/neutral_tree/win/windows_{mscaf}.bed.gz",
+      bed_windows = "../results/neutral_tree/win/windows_{mscaf}.bed.gz",
       win_n_scaf = "../results/neutral_tree/win/win_n_scaf.txt"
     output:
-      fasta = touch( "../results/neutral_tree/windows/{mscaf}.fa.gz" ),
-      maf = "../results/neutral_tree/windows/{mscaf}.maf.gz"
+      maf = "../results/neutral_tree/windows/{mscaf}.maf.gz",
+      fasta = "../results/neutral_tree/windows/{mscaf}.fa.gz" 
     params:
       ref_spec = SPEC_REF,
       nr = lambda wc: scaf_to_nr(wc)
-    log: "logs/maf2fa_{mscaf}.log"
-    container: c_conda
-    conda: "maffilter"
+    log: "logs/window_maf_{mscaf}.log"
+    conda: "biopython"
     shell:
       """
-      N_WIN=$(grep {wildcards.mscaf} {input.win_n_scaf} | cut -f 2)
-      BP_WIN=$((${{N_WIN}} * {WIN_SIZE}))
-      maffilter param={input.conf} NR={params.nr} DATA={wildcards.mscaf} FASIZE=${{BP_WIN}} REF_SPEC={params.ref_spec} &> {log}
+      py/intersect_maf_bed \
+        --maf {input.maf} \
+        --bed {input.bed} \
+        --ref {params.ref_spec} \
+        --output {output.maf}
+      """
+
+rule maf_to_fasta:
+    input:
+      maf = "../results/neutral_tree/windows/{mscaf}.maf.gz"
+    output:
+      fa = "../results/neutral_tree/windows/{mscaf}.fa.gz"
+    params:
+      sample_order = ','.join(SPEC_ALL)
+    log: "logs/maf2fasta_{mscaf}.log"
+    conda: "biopython"
+    shell:
+      """
+      py/maf2fasta \
+        --maf {input.maf} \
+        --fa /dev/stdout \
+        --sample-order {params.sample_order} | \
+        fold -w 80 | \
+        gzip > {output.fa}
       """
 
 # needs update
@@ -247,12 +265,21 @@ rule single_multi_fasta:
     input:
       fas = expand( "../results/neutral_tree/multifa/{mscaf}.fa.gz", mscaf = SCFS )
     output:
-      fa = "../results/neutral_tree/multifa/combined_windows.fa"
-    container: c_conda
-    conda: "seqkit"
+      fa = "../results/neutral_tree/multifa/combined_windows.fa",
+      prep = temp("../results/neutral_tree/multifa/combined_windows.prep.fa"),
+      report = "../results/neutral_tree/multifa/basereport.tsv"
+    params:
+      sample_order = ','.join(SPEC_ALL)
+    conda: "biopython"
     shell:
       """
-      seqkit concat {input.fas} --full > {output.fa}
+      py/concat_fastas \
+        tests/fa/test1.fa tests/fa/test2.fa \
+        -s {params.sample_order} \
+        -o {ouput.prep} \
+        --base-report > {output.report} 
+        
+      fold -w 80 {ouput.prep} > {ouput.fa}
       """
 
 rule estimate_branchlengths:
