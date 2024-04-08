@@ -221,8 +221,7 @@ rule subset_window_maf:
       bed_windows = "../results/neutral_tree/win/windows_{mscaf}.bed.gz",
       win_n_scaf = "../results/neutral_tree/win/win_n_scaf.txt"
     output:
-      maf = "../results/neutral_tree/windows/{mscaf}.maf.gz",
-      fasta = "../results/neutral_tree/windows/{mscaf}.fa.gz" 
+      maf = "../results/neutral_tree/windows/{mscaf}.maf.gz"
     params:
       ref_spec = SPEC_REF,
       nr = lambda wc: scaf_to_nr(wc)
