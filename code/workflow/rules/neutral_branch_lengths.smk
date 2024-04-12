@@ -271,7 +271,7 @@ rule single_multi_fasta:
     shell:
       """
       py/concat_fastas \
-        tests/fa/test1.fa tests/fa/test2.fa \
+        {input.fas} \
         -s {params.sample_order} \
         -o {output.prep} \
         --base-report > {output.report} 
