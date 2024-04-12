@@ -233,8 +233,9 @@ rule subset_window_maf:
         --maf {input.maf} \
         --bed {input.bed_windows} \
         --ref {params.ref_spec} \
-        --output {output.maf} \
-        --min_overlap_length 1
+        --output /dev/stdout \
+        --min_overlap_length 1 | \
+        gzip > {output.maf}
       """
 
 rule maf_to_fasta:
