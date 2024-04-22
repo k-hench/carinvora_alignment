@@ -29,6 +29,7 @@ rule convert_hal:
     input: 
       maf = expand("../results/maf/{name}_{mscaf}.maf", name = P_NAME, mscaf = MSCAFS),
       snps = expand("../results/anc_allele/{name}_{mscaf}.tsv.gz", name = P_NAME, mscaf = MSCAFS),
+      combined_snps = "../results/anc_allele/arcgaz_anc41_snps.tsv.gz"
 
 rule hal_to_maf:
     input:
@@ -90,4 +91,23 @@ rule pack_ancestal_tsv:
     shell:
       """
       gzip {input.tsv}
+      """
+
+rule combine_snps:
+    input:
+      tsv = expand( "../results/anc_allele/{name}_{mscaf}.tsv", name = P_NAME, mscaf = MSCAFS )
+    output:
+      tsv = "../results/anc_allele/arcgaz_anc41_snps.tsv.gz"
+    params:
+      pre = "results/anc_allele/arcgaz_anc41_snps.tsv"
+    conda: "popgen_basics"
+    shell:
+      """
+      zcat {input.tsv[0]} | head -n 1 > {params.pre}
+
+      for k in {input.tsv}; do
+        zcat $k | tail -n +2 >> {params.pre}
+      done
+
+      gzip {params.pre}
       """
