@@ -105,7 +105,7 @@ rule combine_snps:
       """
       zcat {input.tsv[0]} | head -n 1 > {params.pre}
 
-      for k in {input.tsv}; do zgrep -v refSequence $k >> {params.pre}; done
+      for k in $(ls ../results/anc_allele/carnivora_set_*.tsv.gz); do zgrep -v refSequence $k >> {params.pre}; done
 
       gzip {params.pre}
       """
