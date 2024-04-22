@@ -27,7 +27,7 @@ rule create_neutral_tree:
     input:
       win_bed = expand( "../results/neutral_tree/win/windows_{mscaf}.bed.gz", mscaf = SCFS ),
       tree = "../results/neutral_tree/multifa/combined_windows.fa.treefile",
-      gerp = expand( "../results/maf/carnivora_set_{mscaf_nr}.maf.rates", mscaf_nr = MSCAFS )
+      gerp = expand( "../results/grep/{name}_{mscaf_nr}_gerp.bed.gz", mscaf_nr = MSCAFS )
 
 rule create_neutral_window_mafs:
     input: expand( "../results/neutral_tree/windows/{mscaf}.maf.gz", mscaf = SCFS )
@@ -329,4 +329,18 @@ rule call_gerp:
     shell:
       """
       gerpcol -t {input.tree} -f {input.maf} -e {params.refname} -j -z -x ".rates" &> {log}
+      """
+
+rule parse_gerp_beds:
+    input:
+      rates = "../results/maf/{name}_{mscaf_nr}.maf.rates"
+    output:
+      bed = "../results/grep/{name}_{mscaf_nr}_gerp.bed.gz"
+    conda: "popgen_basics"
+    shell:
+      """
+      awk -v s="mscaf_a1_{wildcards.mscaf_nr}" \
+        '{print s"\t"NR-1"\t"NR"\t"$1}' {input.rates} | \
+        grep -v "\s0$" | \
+        bgzip > {output.bed}
       """
