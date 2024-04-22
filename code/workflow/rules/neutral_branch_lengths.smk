@@ -27,7 +27,7 @@ rule create_neutral_tree:
     input:
       win_bed = expand( "../results/neutral_tree/win/windows_{mscaf}.bed.gz", mscaf = SCFS ),
       tree = "../results/neutral_tree/multifa/combined_windows.fa.treefile",
-      gerp = expand( "../results/gerp/{mscaf_nr}_gerp.bed.gz", mscaf_nr = MSCAFS )
+      gerp = "../results/gerp/gerp.bed.gz"
 
 rule create_neutral_window_mafs:
     input: expand( "../results/neutral_tree/windows/{mscaf}.maf.gz", mscaf = SCFS )
@@ -37,7 +37,7 @@ rule convert_hal_to_maf:
       maf = expand("../results/maf/{name}_{mscaf}.maf", name = P_NAME, mscaf = MSCAFS)
 
 rule call_rates:
-    input: expand("../results/gerp/{mscaf_nr}_gerp.bed.gz", name = P_NAME, mscaf_nr = MSCAFS)
+    input: "../results/gerp/gerp.bed.gz"
 
 # we need to determine what part of the genome is covered 
 # by a the alignment of all other (tip) species
@@ -343,4 +343,15 @@ rule parse_gerp_beds:
         '{{print s"\t"NR-1"\t"NR"\t"$1}}' {input.rates} | \
         grep -v "\s0$" | \
         bgzip > {output.bed}
+      """
+
+rule merge_all_gerp_beds:
+    input:
+      beds = expand( "../results/gerp/{mscaf_nr}_gerp.bed.gz", mscaf_nr = MSCAFS )
+    output:
+      bed = "../results/gerp/gerp.bed.gz"
+    conda: "popgen_basics"
+    shell:
+      """
+      zcat {input.beds} | bgzip > {output.bed}
       """
