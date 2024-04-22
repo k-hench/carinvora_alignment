@@ -95,7 +95,7 @@ rule pack_ancestal_tsv:
 
 rule combine_snps:
     input:
-      tsv = expand( "../results/anc_allele/{name}_{mscaf}.tsv", name = P_NAME, mscaf = MSCAFS )
+      tsv = expand( "../results/anc_allele/{name}_{mscaf}.tsv.gz", name = P_NAME, mscaf = MSCAFS )
     output:
       tsv = "../results/anc_allele/arcgaz_anc41_snps.tsv.gz"
     params:
