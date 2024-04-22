@@ -106,7 +106,7 @@ rule combine_snps:
       zcat {input.tsv[0]} | head -n 1 > {params.pre}
 
       for k in {input.tsv}; do
-        zcat $k | tail -n +2 >> {params.pre}
+        zgrep -v refSequence $k >> {params.pre}
       done
 
       gzip {params.pre}
