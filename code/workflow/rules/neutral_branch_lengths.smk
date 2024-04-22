@@ -340,7 +340,7 @@ rule parse_gerp_beds:
     shell:
       """
       awk -v s="mscaf_a1_{wildcards.mscaf_nr}" \
-        '{print s"\t"NR-1"\t"NR"\t"$1}' {input.rates} | \
+        '{{print s"\t"NR-1"\t"NR"\t"$1}}' {input.rates} | \
         grep -v "\s0$" | \
         bgzip > {output.bed}
       """
