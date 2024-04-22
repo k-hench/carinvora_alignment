@@ -99,7 +99,7 @@ rule combine_snps:
     output:
       tsv = "../results/anc_allele/arcgaz_anc41_snps.tsv.gz"
     params:
-      pre = "results/anc_allele/arcgaz_anc41_snps.tsv"
+      pre = "../results/anc_allele/arcgaz_anc41_snps.tsv"
     conda: "popgen_basics"
     shell:
       """
