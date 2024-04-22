@@ -27,7 +27,7 @@ rule create_neutral_tree:
     input:
       win_bed = expand( "../results/neutral_tree/win/windows_{mscaf}.bed.gz", mscaf = SCFS ),
       tree = "../results/neutral_tree/multifa/combined_windows.fa.treefile",
-      gerp = expand( "../results/grep/{name}_{mscaf_nr}_gerp.bed.gz", mscaf_nr = MSCAFS )
+      gerp = expand( "../results/gerp/{name}_{mscaf_nr}_gerp.bed.gz", mscaf_nr = MSCAFS )
 
 rule create_neutral_window_mafs:
     input: expand( "../results/neutral_tree/windows/{mscaf}.maf.gz", mscaf = SCFS )
@@ -335,7 +335,7 @@ rule parse_gerp_beds:
     input:
       rates = "../results/maf/{name}_{mscaf_nr}.maf.rates"
     output:
-      bed = "../results/grep/{name}_{mscaf_nr}_gerp.bed.gz"
+      bed = "../results/gerp/{name}_{mscaf_nr}_gerp.bed.gz"
     conda: "popgen_basics"
     shell:
       """
