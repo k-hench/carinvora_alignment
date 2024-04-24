@@ -357,7 +357,7 @@ rule collapse_gerp_bed:
     conda: "r_tidy"
     shell:
       """
-      Rscript --vanilla R/collapse_bed_coverage.R {input.bed} {output.bed} &>> {log}
+      Rscript --vanilla R/collapse_bed_gerp.R {input.bed} {output.bed} &>> {log}
       """
 
 rule merge_all_gerp_beds:
