@@ -345,9 +345,24 @@ rule parse_gerp_beds:
         bgzip > {output.bed}
       """
 
+# similarely to the coverage, the original bed is single bp elements,
+# so we collapse continous chunks of equal gerp RS 
+rule collapse_cov_bed:
+    input:
+      bed = "../results/gerp/{mscaf_nr}_gerp.bed.gz"
+    output:
+      bed = "../results/gerp/{mscaf}_gerp.collapsed.bed.gz"
+    log: "logs/collapse_gerp_bed_{mscaf}.log"
+    container: c_conda
+    conda: "r_tidy"
+    shell:
+      """
+      Rscript --vanilla R/collapse_bed_coverage.R {input.bed} {output.bed} &>> {log}
+      """
+
 rule merge_all_gerp_beds:
     input:
-      beds = expand( "../results/gerp/{mscaf_nr}_gerp.bed.gz", mscaf_nr = MSCAFS )
+      beds = expand( "../results/gerp/{mscaf}_gerp.collapsed.bed.gz", mscaf_nr = MSCAFS )
     output:
       bed = "../results/gerp/gerp.bed.gz"
     conda: "popgen_basics"
@@ -355,3 +370,4 @@ rule merge_all_gerp_beds:
       """
       zcat {input.beds} | bgzip > {output.bed}
       """
+

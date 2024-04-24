@@ -107,5 +107,5 @@ rule combine_snps:
 
       for k in $(ls ../results/anc_allele/carnivora_set_*.tsv.gz); do zgrep -v refSequence $k >> {params.pre}; done
 
-      gzip {params.pre}
+      bgzip {params.pre}
       """
