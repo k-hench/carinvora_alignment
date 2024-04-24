@@ -362,7 +362,7 @@ rule collapse_gerp_bed:
 
 rule merge_all_gerp_beds:
     input:
-      beds = expand( "../results/gerp/{mscaf}_gerp.collapsed.bed.gz", mscaf_nr = MSCAFS )
+      beds = expand( "../results/gerp/{mscaf}_gerp.collapsed.bed.gz", mscaf = MSCAFS )
     output:
       bed = "../results/gerp/gerp.bed.gz"
     conda: "popgen_basics"
