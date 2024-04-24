@@ -9,7 +9,7 @@ bed <- read_tsv(bed_in, col_names = c("seq", "start", "end", "gerp"))
 bed |>
   group_by(seq) |>
   mutate(gerp_bin = cumsum(!(gerp == lag(gerp, default = NA) & start == lag(end, default = 0) ))) |>
-  group_by(seq, cov_bin) |>
+  group_by(seq, gerp_bin) |>
   summarize(start = min(start),
             end = max(end),
             gerp = gerp[[1]]) |>
