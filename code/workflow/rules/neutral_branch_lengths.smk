@@ -347,7 +347,7 @@ rule parse_gerp_beds:
 
 # similarely to the coverage, the original bed is single bp elements,
 # so we collapse continous chunks of equal gerp RS 
-rule collapse_cov_bed:
+rule collapse_gerp_bed:
     input:
       bed = "../results/gerp/{mscaf_nr}_gerp.bed.gz"
     output:
