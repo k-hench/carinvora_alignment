@@ -23,7 +23,7 @@ snakemake --jobs 50 \
 """
 
 GTF_FILE = "../data/genomes/annotation/arcGaz4_h1_relabel_annotation_sorted.gtf.gz"
-GFF_FILE = "../data/genomes/annotation/arcGaz4_h1_relabel_annotation_sorted.gff3.gz"
+GFF_FILE = "../data/genomes/annotation/arcGaz4_h1_relabel_annotation.gff3.gz"
 
 rule all_ml_snpeff:
     input: 
