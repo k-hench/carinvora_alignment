@@ -128,7 +128,7 @@ rule create_snpeff_db:
       prot = "../results/snp_eff/data/{ref}/protein.fa.gz".format( ref = SPEC_REF ),
       conf = "../results/snp_eff/snpEff.config",
       snp_fa = "../results/snp_eff/data/genomes/{ref}.fa".format( ref = SPEC_REF ),
-      snp_gff = "../results/snp_eff/data/{ref}/genes.gtf.gz".format( ref = SPEC_REF ),
+      snp_gtf = "../results/snp_eff/data/{ref}/genes.gtf.gz".format( ref = SPEC_REF ),
       snp_gff = "../results/snp_eff/data/{ref}/genes.gff.gz".format( ref = SPEC_REF )
     output:
       check = touch( "../results/checkpoints/snpeff_{ref}.check" )
