@@ -128,7 +128,7 @@ rule prep_snpeff_dir:
       mkdir -p {params.snpeff_path}/data/{SPEC_REF} {params.snpeff_path}/data/genomes
       cd {code_dir}/{params.snpeff_path}/data/{SPEC_REF}
       ln -s {code_dir}/{input.gtf} ./genes.gtf.gz
-      ln -s {code_dir}/{input.gff} ./genes.gff.gz
+      cat {code_dir}/{input.gff} | gzip > ./genes.gff.gz
       cd {code_dir}/{params.snpeff_path}/data/genomes
       ln -s {code_dir}/{input.fa} ./{SPEC_REF}.fa
       """
