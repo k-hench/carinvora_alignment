@@ -1,0 +1,8 @@
+# mamba env create -f mgkit.yml
+name: mgkit
+channels:
+ - conda-forge
+ - bioconda
+ - defaults
+dependencies:
+ -  bioconda::mgkit=0.5.8
