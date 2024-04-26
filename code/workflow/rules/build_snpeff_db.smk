@@ -135,12 +135,12 @@ rule create_snpeff_db:
     params:
       snpeff_path = "../results/snp_eff"
     resources:
-      mem_mb=25600
+      mem_mb=81200
     container: c_ml
     shell:
       """
       cd {code_dir}/{params.snpeff_path}
-      snpEff build -Xmx24G -c {code_dir}/{input.conf} -dataDir $(pwd)/data -gff3 -v {SPEC_REF}
+      snpEff build -Xmx75G -c {code_dir}/{input.conf} -dataDir $(pwd)/data -gff3 -v {SPEC_REF}
       """
 
 # # remaining workflow once there are genotypes to be annotated:
