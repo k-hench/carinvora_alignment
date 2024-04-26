@@ -27,7 +27,7 @@ GFF_FILE = "../data/genomes/annotation/arcGaz4_h1_relabel_annotation_sorted.gff3
 
 rule all_ml_snpeff:
     input: 
-      snpeff_gff = "../results/snp_eff/data/{ref}/genes.gtf.gz".format( ref = SPEC_REF ) 
+      snpeff_check =  "../results/checkpoints/snpeff_{ref}.check".format( ref = SPEC_REF ) 
       # vcf = expand( "../results/genotyping/annotated/{vcf_pre}_ann.vcf.gz", vcf_pre = "<vcf_base_name_here>" )
 
 rule create_snpeff_config:
@@ -93,7 +93,7 @@ rule extract_prot:
       gzip {params.pep_prefix}/protein.fa
       """
 
-rule create_snpeff_db:
+rule prep_snpeff_dir:
     input:
       fa = ".." + ALT_GENOME.strip( ".gz" ),
       gtf = GTF_FILE,
@@ -115,6 +115,26 @@ rule create_snpeff_db:
       ln -s {code_dir}/{input.gtf} ./genes.gtf.gz
       cd {code_dir}/{params.snpeff_path}/data/genomes
       ln -s {code_dir}/{input.fa} ./{SPEC_REF}.fa
+      """
+
+rule create_snpeff_db:
+    input:
+      fa = ".." + ALT_GENOME.strip( ".gz" ),
+      gtf = GTF_FILE,
+      cds = "../results/snp_eff/data/{ref}/cds.fa.gz".format( ref = SPEC_REF ),
+      prot = "../results/snp_eff/data/{ref}/protein.fa.gz".format( ref = SPEC_REF ),
+      conf = "../results/snp_eff/snpEff.config",
+      snp_fa = "../results/snp_eff/data/genomes/{ref}.fa".format( ref = SPEC_REF ),
+      snp_gff = "../results/snp_eff/data/{ref}/genes.gtf.gz".format( ref = SPEC_REF )
+    output:
+      check = touch( "../results/checkpoints/snpeff_{ref}.check" )
+    params:
+      snpeff_path = "../results/snp_eff"
+    resources:
+      mem_mb=25600
+    container: c_ml
+    shell:
+      """
       cd {code_dir}/{params.snpeff_path}
       snpEff build -Xmx24G -c {code_dir}/{input.conf} -dataDir $(pwd)/data -gtf22 -v {SPEC_REF}
       """
