@@ -97,12 +97,14 @@ rule prep_snpeff_dir:
     input:
       fa = ".." + ALT_GENOME.strip( ".gz" ),
       gtf = GTF_FILE,
+      gff = GFF_FILE,
       cds = "../results/snp_eff/data/{ref}/cds.fa.gz".format( ref = SPEC_REF ),
       prot = "../results/snp_eff/data/{ref}/protein.fa.gz".format( ref = SPEC_REF ),
       conf = "../results/snp_eff/snpEff.config"
     output:
       snp_fa = "../results/snp_eff/data/genomes/{ref}.fa".format( ref = SPEC_REF ),
-      snp_gff = "../results/snp_eff/data/{ref}/genes.gtf.gz".format( ref = SPEC_REF )
+      snp_gtf = "../results/snp_eff/data/{ref}/genes.gtf.gz".format( ref = SPEC_REF ),
+      snp_gff = "../results/snp_eff/data/{ref}/genes.gff.gz".format( ref = SPEC_REF )
     params:
       snpeff_path = "../results/snp_eff"
     resources:
@@ -113,6 +115,7 @@ rule prep_snpeff_dir:
       mkdir -p {params.snpeff_path}/data/{SPEC_REF} {params.snpeff_path}/data/genomes
       cd {code_dir}/{params.snpeff_path}/data/{SPEC_REF}
       ln -s {code_dir}/{input.gtf} ./genes.gtf.gz
+      ln -s {code_dir}/{input.gff} ./genes.gff.gz
       cd {code_dir}/{params.snpeff_path}/data/genomes
       ln -s {code_dir}/{input.fa} ./{SPEC_REF}.fa
       """
@@ -125,7 +128,8 @@ rule create_snpeff_db:
       prot = "../results/snp_eff/data/{ref}/protein.fa.gz".format( ref = SPEC_REF ),
       conf = "../results/snp_eff/snpEff.config",
       snp_fa = "../results/snp_eff/data/genomes/{ref}.fa".format( ref = SPEC_REF ),
-      snp_gff = "../results/snp_eff/data/{ref}/genes.gtf.gz".format( ref = SPEC_REF )
+      snp_gff = "../results/snp_eff/data/{ref}/genes.gtf.gz".format( ref = SPEC_REF ),
+      snp_gff = "../results/snp_eff/data/{ref}/genes.gff.gz".format( ref = SPEC_REF )
     output:
       check = touch( "../results/checkpoints/snpeff_{ref}.check" )
     params:
@@ -136,7 +140,7 @@ rule create_snpeff_db:
     shell:
       """
       cd {code_dir}/{params.snpeff_path}
-      snpEff build -Xmx24G -c {code_dir}/{input.conf} -dataDir $(pwd)/data -gtf22 -v {SPEC_REF}
+      snpEff build -Xmx24G -c {code_dir}/{input.conf} -dataDir $(pwd)/data -gff3 -v {SPEC_REF}
       """
 
 # # remaining workflow once there are genotypes to be annotated:
