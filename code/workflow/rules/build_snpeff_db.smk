@@ -22,8 +22,10 @@ snakemake --jobs 50 \
   -R all_ml_snpeff
 """
 
+
 GTF_FILE = "../data/genomes/annotation/arcGaz4_h1_relabel_annotation_sorted.gtf.gz"
-GFF_FILE = "../data/genomes/annotation/arcGaz4_h1_relabel_annotation.gff3.gz"
+GFF_FILE = "../results/arcGaz4_h1_relabel_annotation_cleaned.gff"
+GFF_PREP = "../data/genomes/annotation/arcGaz4_h1_relabel_annotation.gff3.gz"
 
 rule all_ml_snpeff:
     input: 
@@ -47,6 +49,17 @@ rule gunzip_fa:
     shell:
       """
       zcat {input.fa} > {output.fa}
+      """
+
+rule clean_gff:
+    input:
+      gff = GFF_PREP
+    output:
+      gff = GFF_FILE
+    conda: "mgkit"
+    shell:
+      """
+      edit-gff remove -a Note  -a _AED  -a _eAED -a uid {input.gff} > {output.gff}
       """
 
 rule extract_cds:
