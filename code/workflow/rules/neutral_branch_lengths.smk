@@ -27,7 +27,7 @@ rule create_neutral_tree:
     input:
       win_bed = expand( "../results/neutral_tree/win/windows_{mscaf}.bed.gz", mscaf = SCFS ),
       tree = "../results/neutral_tree/multifa/combined_windows.fa.treefile",
-      gerp = expand( "../results/gerp/gerp_{gerp_type}.bed.gz", gerp_type = ["nr", "rs"] )
+      gerp = expand( "../results/gerp/{gerp_type}/gerp_{gerp_type}.bed.gz", gerp_type = ["nr", "rs"] )
 
 rule create_neutral_window_mafs:
     input: expand( "../results/neutral_tree/windows/{mscaf}.maf.gz", mscaf = SCFS )
@@ -337,7 +337,7 @@ rule parse_gerp_beds:
     input:
       rates = "../results/maf/carnivora_set_{mscaf_nr}.maf.rates"
     output:
-      bed = "../results/gerp/{mscaf_nr}_gerp_{gerp_type}.bed.gz"
+      bed = "../results/gerp/{gerp_type}/{mscaf_nr}_gerp_{gerp_type}.bed.gz"
     conda: "popgen_basics"
     params:
       col_idx = lambda wc: GERP_COLUMNS[wc.gerp_type]
@@ -353,9 +353,9 @@ rule parse_gerp_beds:
 # so we collapse continous chunks of equal gerp RS 
 rule collapse_gerp_bed:
     input:
-      bed = "../results/gerp/{mscaf_nr}_gerp_{gerp_type}.bed.gz"
+      bed = "../results/gerp/{gerp_type}/{mscaf_nr}_gerp_{gerp_type}.bed.gz"
     output:
-      bed = "../results/gerp/{mscaf}_gerp_{gerp_type}.collapsed.bed.gz"
+      bed = "../results/gerp/{gerp_type}/{mscaf}_gerp_{gerp_type}.collapsed.bed.gz"
     log: "logs/collapse_gerp_bed_{mscaf}_{gerp_type}.log"
     container: c_conda
     conda: "r_tidy"
@@ -366,7 +366,7 @@ rule collapse_gerp_bed:
 
 rule merge_all_gerp_beds:
     input:
-      beds = expand( "../results/gerp/{mscaf}_gerp_{{gerp_type}}.collapsed.bed.gz", mscaf = MSCAFS )
+      beds = expand( "../results/gerp/{gerp_type}/{mscaf}_gerp_{{gerp_type}}.collapsed.bed.gz", mscaf = MSCAFS )
     output:
       bed = "../results/gerp/gerp_{gerp_type}.bed.gz"
     conda: "popgen_basics"
