@@ -27,7 +27,7 @@ rule create_neutral_tree:
     input:
       win_bed = expand( "../results/neutral_tree/win/windows_{mscaf}.bed.gz", mscaf = SCFS ),
       tree = "../results/neutral_tree/multifa/combined_windows.fa.treefile",
-      gerp = "../results/gerp/gerp.bed.gz"
+      gerp = expand( "../results/gerp/gerp_{gerp_type}.bed.gz", gerp_type = ["nr", "rs"] )
 
 rule create_neutral_window_mafs:
     input: expand( "../results/neutral_tree/windows/{mscaf}.maf.gz", mscaf = SCFS )
@@ -331,16 +331,20 @@ rule call_gerp:
       gerpcol -t {input.tree} -f {input.maf} -e {params.refname} -j -z -x ".rates" &> {log}
       """
 
+GERP_COLUMNS = {"nr": 1, "rs": 2}
+
 rule parse_gerp_beds:
     input:
       rates = "../results/maf/carnivora_set_{mscaf_nr}.maf.rates"
     output:
-      bed = "../results/gerp/{mscaf_nr}_gerp.bed.gz"
+      bed = "../results/gerp/{mscaf_nr}_gerp_{gerp_type}.bed.gz"
     conda: "popgen_basics"
+    params:
+      col_idx = lambda wc: GERP_COLUMNS[wc.gerp_type]
     shell:
       """
       awk -v s="mscaf_a1_{wildcards.mscaf_nr}" \
-        '{{print s"\t"NR-1"\t"NR"\t"$1}}' {input.rates} | \
+        '{{ print s"\t"NR-1"\t"NR"\t"${params.col_idx} }}' {input.rates} | \
         grep -v "\s0$" | \
         bgzip > {output.bed}
       """
@@ -349,22 +353,22 @@ rule parse_gerp_beds:
 # so we collapse continous chunks of equal gerp RS 
 rule collapse_gerp_bed:
     input:
-      bed = "../results/gerp/{mscaf}_gerp.bed.gz"
+      bed = "../results/gerp/{mscaf_nr}_gerp_{gerp_type}.bed.gz"
     output:
-      bed = "../results/gerp/{mscaf}_gerp.collapsed.bed.gz"
-    log: "logs/collapse_gerp_bed_{mscaf}.log"
+      bed = "../results/gerp/{mscaf}_gerp_{gerp_type}.collapsed.bed.gz"
+    log: "logs/collapse_gerp_bed_{mscaf}_{gerp_type}.log"
     container: c_conda
     conda: "r_tidy"
     shell:
       """
-      Rscript --vanilla R/collapse_bed_gerp.R {input.bed} {output.bed} &>> {log}
+      Rscript --vanilla R/collapse_bed_gerp.R {input.bed} {output.bed} {wildcards.gerp_type} &>> {log}
       """
 
 rule merge_all_gerp_beds:
     input:
-      beds = expand( "../results/gerp/{mscaf}_gerp.collapsed.bed.gz", mscaf = MSCAFS )
+      beds = expand( "../results/gerp/{mscaf}_gerp_{{gerp_type}}.collapsed.bed.gz", mscaf = MSCAFS )
     output:
-      bed = "../results/gerp/gerp.bed.gz"
+      bed = "../results/gerp/gerp_{gerp_type}.bed.gz"
     conda: "popgen_basics"
     shell:
       """
