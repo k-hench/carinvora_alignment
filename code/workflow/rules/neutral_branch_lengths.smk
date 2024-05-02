@@ -337,7 +337,7 @@ rule parse_gerp_beds:
     input:
       rates = "../results/maf/carnivora_set_{mscaf_nr}.maf.rates"
     output:
-      bed = "../results/gerp/{gerp_type}/mscaf_a1_{mscaf_nr}_gerp_{gerp_type}.bed.gz"
+      bed = "../results/gerp/{gerp_type}/mscaf_a1_{mscaf_nr}-gerp-{gerp_type}.bed.gz"
     conda: "popgen_basics"
     params:
       col_idx = lambda wc: GERP_COLUMNS[wc.gerp_type]
