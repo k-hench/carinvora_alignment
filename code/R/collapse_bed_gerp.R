@@ -3,7 +3,6 @@ library(tidyverse)
 args <- commandArgs(trailingOnly = TRUE)
 bed_in <- args[[1]]
 bed_out <- args[[2]]
-gerp_type <- args[[3]]
 
 bed <- read_tsv(bed_in, col_names = c("seq", "start", "end", "gerp"))
 

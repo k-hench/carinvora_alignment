@@ -54,6 +54,9 @@ GENOME_PARTITIONS = [ str(x + 1).zfill(2) for x in np.arange(20)]
 REF_GENOME = "../data/genomes/arcGaz4_h1.fa.gz"
 ALT_GENOME = "../data/genomes/arcGaz4_h1_relabel.fa.gz"
 
+wildcard_constraints:
+    mscaf = "[^-]*"
+
 include: "./rules/initial_dl.smk"
 include: "./rules/repeat_mask.smk"
 include: "./rules/cactus_prep.smk"
