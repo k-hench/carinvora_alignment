@@ -353,7 +353,7 @@ rule parse_gerp_beds:
 # so we collapse continous chunks of equal gerp RS 
 rule collapse_gerp_bed:
     input:
-      bed = "../results/gerp/{gerp_type}/{mscaf_nr}-gerp-{gerp_type}.bed.gz"
+      bed = "../results/gerp/{gerp_type}/{mscaf}-gerp-{gerp_type}.bed.gz"
     output:
       bed = "../results/gerp/{gerp_type}/{mscaf}-gerp-{gerp_type}.collapsed.bed.gz"
     log: "logs/collapse_gerp_bed_{mscaf}_{gerp_type}.log"
