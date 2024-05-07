@@ -37,7 +37,7 @@ rule convert_hal_to_maf:
       maf = expand("../results/maf/{name}_{mscaf}.maf", name = P_NAME, mscaf = MSCAFS)
 
 rule call_rates:
-    input: "../results/gerp/gerp.bed.gz"
+    input: expand( "../results/gerp/{gerp_type}/gerp_{gerp_type}.bed.gz", gerp_type = ["nr", "rs"] )
 
 # we need to determine what part of the genome is covered 
 # by a the alignment of all other (tip) species
