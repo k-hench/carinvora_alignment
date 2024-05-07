@@ -59,8 +59,8 @@ rule phylop_model:
       """
       PATH_UPDATE="PATH=/home/cactus/cactus_env/bin:/home/cactus/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/conda/envs/phast/bin"
 
-      apptainer exec --fakeroot \
-        --overlay {params.overlay} \
+      apptainer exec \
+        --fakeroot --overlay {params.overlay}:ro \
         --bind {params.bind_paths} \
         --env "PATH=${{PATH_UPDATE}}" \
          {c_cactus} \
