@@ -29,14 +29,16 @@ rule all_phylop:
 
 rule merge_mafs:
     input:
-      mafs = expand( "../results/neutral_tree/windows/{mscaf}.maf.gz", mscaf = SCFS[:17] )
+      maf = "../results/neutral_tree/windows/{mscaf}.maf.gz".format( SCFS[0] )
+      mafs = expand( "../results/neutral_tree/windows/{mscaf}.maf.gz", mscaf = SCFS[1:17] )
     output:
       maf = "../results/neutral_tree/windows/autosomes.maf.gz"
     params:
       prefix = "../results/neutral_tree/windows/autosomes.maf"
     shell:
       """
-      zcat {input.mafs[0]} | head -n 1 > {params.prefix}
+      zcat {input.maf}  > {params.prefix}
+
       for k in {input.mafs}; do zcat ${{k}} | tail -n +2 >> {params.prefix}; done
 
       gzip {params.prefix}
