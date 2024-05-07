@@ -67,15 +67,22 @@ extract_species_for_group <- \(gr_contains){
 
 # helper function to create genotypes based on assignment to a clade
 create_fixed_genotypes <- \(spec_in){
-  tibble(spec = all_tips,
+  t1 <- tibble(spec = all_tips,
          GT = if_else(spec %in% spec_in, "1/1", "0/0")) |>
     pivot_wider(names_from = spec, values_from = GT)
+  t2 <- tibble(spec = all_tips,
+               GT = if_else(spec %in% spec_in, "./.", "1/1")) |>
+    pivot_wider(names_from = spec, values_from = GT)
+  t3 <- tibble(spec = all_tips,
+               GT = if_else(spec %in% spec_in, "0/0", "./.")) |>
+    pivot_wider(names_from = spec, values_from = GT)
+  bind_rows(t1, t2, t3)
 }
 
 # helper function to create fasta sequence based on assignment to a clade
 create_fa <- \(spec_in){
   tibble(spec = all_tips,
-         fa = if_else(spec %in% spec_in, "T", "A")) |>
+         fa = if_else(spec %in% spec_in, "TT-", "A-A")) |>
     pivot_wider(names_from = spec, values_from = fa)
 }
 
@@ -99,6 +106,7 @@ vcf_head <- glue('##fileformat=VCFv4.2
 ##fileDate={Sys.Date()}
 ##contig=<ID=dummy,length=12,species="none">
 ##INFO=<ID=FI,Number=1,Type=String,Description="Clade in which the SNP is fixed.">
+##INFO=<ID=TP,Number=1,Type=String,Description="Type of case: fixed, missing, or exclusively_present (ex_pres)">
 ##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">')
 vcf_cols <- str_c(c("#CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", all_tips),
                   collapse = "\t")
@@ -115,11 +123,12 @@ group_structure |>
          alt = "T",
          qual = ".",
          filter = "PASS",
-         info = str_c("FI=",gr_label),
+         info = str_c("FI=", gr_label,";TP=",c("fixed","missing","ex_pres")[(row_number()%%3) + 1]),
          format = "GT") |>
   filter(gr_idx > 0) |>
-  select(chr:format,genotypes) |>
+  select(chr:format, genotypes) |>
   unnest(genotypes) |>
+  mutate(pos = row_number()) |> pluck("info")
   write_tsv(file = vcf_out,
             col_names = FALSE,
             append = TRUE)
@@ -137,7 +146,7 @@ maf_lines <- group_structure |>
   select(acijub:zalcal) |>
   summarise(across(acijub:zalcal, \(str){str_c(str, collapse = "")})) |>
   pivot_longer(cols = everything()) |>
-  mutate(maf_line = glue("s {name}.dummy 1 12 + 12 {value}"))
+  mutate(maf_line = glue("s {name}.dummy 1 36 + 24 {value}"))
 
 # force arcgaz to be ref sequence (first entry in maf block)
 maf_lines |>
