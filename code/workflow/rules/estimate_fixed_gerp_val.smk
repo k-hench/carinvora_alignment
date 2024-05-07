@@ -1,6 +1,12 @@
 """
 snakemake -n --rerun-triggers mtime -R fixed_gerp
 
+snakemake --use-singularity \
+    --singularity-args "--bind $CDATA" \
+    --use-conda \
+    --rerun-triggers mtime \
+    -c 1 -R fixed_gerp
+
 snakemake --jobs 50 \
     --latency-wait 30 \
     -p \
@@ -19,7 +25,7 @@ snakemake --jobs 50 \
         --jn job_c.{name}.{jobid}.sh \
         -R fixed_gerp
 """
-localrules: extract_ancestral_tree, compile_fixed_gerp_vcf, call_fixed_gerp
+localrules: extract_ancestral_tree, compile_fixed_gerp_vcf, call_fixed_gerp, 
 
 rule fixed_gerp:
     input:
@@ -78,7 +84,7 @@ rule fixed_gerp_beds:
     shell:
       """
       awk -v s="dummy" \
-        '{{ print s"\t"NR-1"\t"NR"\t"${params.col_idx} }}' {input.rates} | \
+        '{{ print s"\t"NR-2"\t"NR-1"\t"${params.col_idx} }}' {input.rates} | \
         grep -v "\s0$" | \
         bgzip > {output.bed}
       """
