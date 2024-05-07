@@ -23,8 +23,7 @@ localrules: extract_ancestral_tree, compile_fixed_gerp_vcf
 
 rule fixed_gerp:
     input:
-      gerp = "../results/fixed_gerp/fixed_gerp.maf"
-
+      gerp = "../results/fixed_gerp/fixed_gerp.maf.rates"
 
 rule extract_ancestral_tree:
     input:
@@ -51,4 +50,19 @@ rule compile_fixed_gerp_vcf:
     shell:
       """
       Rscript --vanilla R/gerp_fixation_levels.R {input.tree} {output.pdf} {output.vcf} {output.maf} &>> {log}
+      """
+
+rule call_fixed_gerp:
+    input:
+      maf = "../results/fixed_gerp/fixed_gerp.maf",
+      tree = "../results/neutral_tree/rerooted.tree"
+    output:
+      rates = "../results/fixed_gerp/fixed_gerp.maf.rates"
+    params:
+      refname = SPEC_REF 
+    conda: "msa_phast"
+    log: "logs/gerp_fixed.log"
+    shell:
+      """
+      gerpcol -t {input.tree} -f {input.maf} -e {params.refname} -j -z -x ".rates" &> {log}
       """
