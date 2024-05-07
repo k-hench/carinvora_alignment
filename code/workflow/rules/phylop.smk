@@ -32,7 +32,7 @@ rule merge_mafs:
       maf = "../results/neutral_tree/windows/{mscaf}.maf.gz".format( mscaf = SCFS[0] ),
       mafs = expand( "../results/neutral_tree/windows/{mscaf}.maf.gz", mscaf = SCFS[1:17] )
     output:
-      maf = temp( "../results/neutral_tree/windows/autosomes.maf")
+      maf = temp( "../results/phylop/autosomes.maf")
     shell:
       """
       zcat {input.maf}  > {output.maf}
@@ -42,7 +42,7 @@ rule merge_mafs:
 
 rule phylop_model:
     input:
-      maf = "../results/neutral_tree/windows/autosomes.maf",
+      maf = "../results/phylop/autosomes.maf",
       tree = "../results/neutral_tree/rerooted.tree"
     output:
       model = "../results/phylop/autosomes_neutral.mod"
