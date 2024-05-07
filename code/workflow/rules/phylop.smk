@@ -1,5 +1,5 @@
 """
-snaekmake --rerun-triggers mtime -n all_phylop
+snakemake --rerun-triggers mtime -n all_phylop
 
 snakemake --jobs 50 \
   --latency-wait 30 \
@@ -24,7 +24,8 @@ localrules: merge_mafs
 
 rule all_phylop:
     input: 
-      maf = "../results/neutral_tree/windows/autosomes.maf.gz"
+      maf = "../results/neutral_tree/windows/autosomes.maf.gz",
+      model = "../results/phylop/autosomes_neutral.mod"
 
 rule merge_mafs:
     input:
@@ -36,9 +37,34 @@ rule merge_mafs:
     shell:
       """
       zcat {input.mafs[0]} | head -n 1 > {params.prefix}
-      for k in {input.mafs}; do
-        zcat ${{k}} | tail -n +2 >> {params.prefix}
-      done
+      for k in {input.mafs}; do zcat ${{k}} | tail -n +2 >> {params.prefix}; done
 
       gzip {params.prefix}
+      """
+
+rule phylop_model:
+    input:
+      maf = "../results/neutral_tree/windows/autosomes.maf.gz",
+      tree = "../results/neutral_tree/rerooted.tree"
+    output:
+      model = "../results/phylop/autosomes_neutral.mod"
+    log:
+      "logs/phylofit.log"
+    params:
+      overlay = config[ 'img_phylop' ],
+      bind_paths = config[ 'singularity_bind_paths' ]
+    shell:
+      """
+      PATH_UPDATE="PATH=/home/cactus/cactus_env/bin:/home/cactus/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/conda/envs/phast/bin"
+
+      apptainer run \
+        --bind {params.bind_paths} \
+        --overlay {params.overlay} \
+        --env "PATH=${{PATH_UPDATE}}" \
+         {c_cactus} \
+         phyloFit \
+           --tree {input.tree} \
+           --msa-format MAF \
+           --log {log} \
+           {input.maf} > {output.model}
       """
