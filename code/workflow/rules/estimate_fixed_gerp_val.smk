@@ -89,6 +89,39 @@ rule fixed_gerp_beds:
         bgzip > {output.bed}
       """
 
+rule fixed_phylop:
+    input:
+      maf = "../results/fixed_gerp/fixed_gerp.maf",
+      model = "../results/phylop/autosomes_neutral.mod"
+    output:
+      txt = "../results/fixed_gerp/fixed_phylop.txt.gz"
+    params:
+      overlay = config[ 'img_phylop' ],
+      bind_paths = config[ 'singularity_bind_paths' ]
+    log: "logs/phylop_{mscaf_nr}.log"
+    shell:
+      """
+      PATH_UPDATE="PATH=/home/cactus/cactus_env/bin:/home/cactus/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/conda/envs/phast/bin"
+
+      apptainer exec \
+        --fakeroot --overlay {params.overlay}:ro \
+        --bind {params.bind_paths} \
+        --env "PATH=${{PATH_UPDATE}}" \
+         {c_cactus} \
+         phyloP \
+           --base-by-base \
+           --method LRT \
+           --method ACC \
+           --method NNEUT \
+           --method CONACC \
+           --method SCORE \
+           --method GERP \
+           --msa-format MAF \
+            --log {log} \
+            {input.model} {input.maf} | \
+            gzip > {output.txt}
+      """
+
 rule bgzip_vcf:
     input:
       vcf = "../results/fixed_gerp/fixed_gerp.vcf"

@@ -80,3 +80,36 @@ rule phylop_model:
            --log {log} \
            {input.maf} > {output.model}
       """
+
+rule call_phylop:
+    input:
+      maf = "../results/maf/carnivora_set_{mscaf_nr}.maf",
+      model = "../results/phylop/autosomes_neutral.mod"
+    output:
+      rates = "../results/phylop/phylop_{mscaf_nr}.txt.gz"
+    params:
+      overlay = config[ 'img_phylop' ],
+      bind_paths = config[ 'singularity_bind_paths' ]
+    log: "logs/phylop_{mscaf_nr}.log"
+    shell:
+      """
+      PATH_UPDATE="PATH=/home/cactus/cactus_env/bin:/home/cactus/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/conda/envs/phast/bin"
+
+      apptainer exec \
+        --fakeroot --overlay {params.overlay}:ro \
+        --bind {params.bind_paths} \
+        --env "PATH=${{PATH_UPDATE}}" \
+         {c_cactus} \
+         phyloP \
+           --base-by-base \
+           --method LRT \
+           --method ACC \
+           --method NNEUT \
+           --method CONACC \
+           --method SCORE \
+           --method GERP \
+           --msa-format MAF \
+            --log {log} \
+            {input.model} {input.maf} | \
+            gzip > {output.txt}
+      """
