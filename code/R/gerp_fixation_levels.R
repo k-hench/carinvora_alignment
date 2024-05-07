@@ -128,7 +128,7 @@ group_structure |>
   filter(gr_idx > 0) |>
   select(chr:format, genotypes) |>
   unnest(genotypes) |>
-  mutate(pos = row_number()) |> pluck("info")
+  mutate(pos = row_number()) |>
   write_tsv(file = vcf_out,
             col_names = FALSE,
             append = TRUE)
