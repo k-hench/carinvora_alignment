@@ -37,9 +37,9 @@ group_labels <- tibble(
 p <- tree_anc_data |>
   left_join(group_labels) |>
   ggtree(aes(color = group)) +
-  geom_node_text(aes(label = str_c(str_remove(label, "Anc"), ":", node), filter = !isTip),
+  geom_nodelab(aes(label = str_c(str_remove(label, "Anc"), ":", node), filter = !isTip),
                  color = "red", family = fnt_sel) +
-  geom_node_text(aes(label =gr_label, filter = !isTip,
+  geom_nodelab(aes(label =gr_label, filter = !isTip,
                  color = factor(gr_idx)), vjust = 1.8, family = fnt_sel) +
   geom_tiplab(family = fnt_sel) +
   scale_color_manual(values = c("black",
