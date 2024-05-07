@@ -88,7 +88,7 @@ create_fa <- \(spec_in){
   tibble(spec = all_tips,
          fa = if_else(spec %in% spec_in,
                       if_else(spec == refspec, "TTT", "TT-"),
-                      if_else(spec == refspec, "AAA", "A-A"))) |>
+                      if_else(spec == refspec, "GGG", "G-G"))) |>
     pivot_wider(names_from = spec, values_from = fa)
 }
 
@@ -126,7 +126,7 @@ group_structure |>
          pos = gr_idx,
          id = ".",
          ref = "A",
-         alt = "T",
+         alt = "G",
          qual = ".",
          filter = "PASS",
          info = str_c("FI=", gr_label,";TP=",c("fixed","missing","ex_pres")[(row_number()%%3) + 1]),
