@@ -20,7 +20,7 @@ snakemake --jobs 50 \
       -R all_phylop
 """
 
-localrules: merge_mafs
+localrules: merge_mafs, unzip_autosome_maf
 
 rule all_phylop:
     input: 
