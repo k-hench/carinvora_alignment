@@ -131,12 +131,22 @@ a'
 
 maf_head |> write_lines(file = maf_out)
 
-group_structure |>
+maf_lines <- group_structure |>
   filter(gr_idx > 0) |>
   unnest(fa) |>
   select(acijub:zalcal) |>
   summarise(across(acijub:zalcal, \(str){str_c(str, collapse = "")})) |>
   pivot_longer(cols = everything()) |>
-  mutate(maf_line = glue("s {name}.dummy 1 12 + 12 {value}")) |>
+  mutate(maf_line = glue("s {name}.dummy 1 12 + 12 {value}"))
+
+# force arcgaz to be ref sequence (first entry in maf block)
+maf_lines |>
+  filter(name == "arcgaz") |>
+  pluck("maf_line") |>
+  write_lines(file = maf_out, append = TRUE)
+
+# append all non-arcgaz species
+maf_lines |>
+  filter(name != "arcgaz") |>
   pluck("maf_line") |>
   write_lines(file = maf_out, append = TRUE)

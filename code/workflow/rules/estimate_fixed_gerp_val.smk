@@ -23,7 +23,7 @@ localrules: extract_ancestral_tree, compile_fixed_gerp_vcf, call_fixed_gerp
 
 rule fixed_gerp:
     input:
-      gerp = "../results/fixed_gerp/fixed_gerp.maf.rates"
+      gerp = "../results/fixed_gerp/fixed_gerp_annotated.vcf.gz"
 
 rule extract_ancestral_tree:
     input:
@@ -65,4 +65,55 @@ rule call_fixed_gerp:
     shell:
       """
       gerpcol -t {input.tree} -f {input.maf} -e {params.refname} -j -z -x ".rates" &> {log}
+      """
+
+rule fixed_gerp_beds:
+    input:
+      rates = "../results/fixed_gerp/fixed_gerp.maf.rates"
+    output:
+      bed = "../results/fixed_gerp/fixed_gerp.bed.gz"
+    conda: "popgen_basics"
+    params:
+      col_idx = 2
+    shell:
+      """
+      awk -v s="dummy" \
+        '{{ print s"\t"NR-1"\t"NR"\t"${params.col_idx} }}' {input.rates} | \
+        grep -v "\s0$" | \
+        bgzip > {output.bed}
+      """
+
+rule bgzip_vcf:
+    input:
+      vcf = "../results/fixed_gerp/fixed_gerp.vcf"
+    output:
+      vcf = "../results/fixed_gerp/fixed_gerp.vcf.gz",
+      tbi = "../results/fixed_gerp/fixed_gerp.vcf.gz.tbi"
+    conda: "popgen_basics"
+    shell:
+      """
+      bgzip {input.vcf}
+      tabix -p vcf {output.vcf}
+      """
+
+rule add_gerp_values_to_vcf:
+    input:
+      vcf = "../results/fixed_gerp/fixed_gerp.vcf.gz",
+      gerp = "../results/fixed_gerp/fixed_gerp.bed.gz"
+    output:
+      vcf_head = temp( "../results/fixed_gerp/new_info_field_rs.txt" ),
+      vcf = "../results/fixed_gerp/fixed_gerp_annotated.vcf.gz"
+    conda: "popgen_basics"
+    shell:
+      """
+      echo '##INFO=<ID=RS,Number=1,Type=Float,Description="GERP RS score based on 67-way carnivora alignment (max. value = cummulative branch length of underlying phylogeny: 1.348829)">' > {output.vcf_head}
+
+      bcftools annotate \
+        -a {input.gerp} \
+        -c "CHROM,FROM,TO,INFO/RS" \
+        -h {output.vcf_head} \
+        {input.vcf} | \
+        bgzip > {output.vcf}
+      
+      tabix -p vcf {output.vcf}
       """
