@@ -50,5 +50,5 @@ rule compile_fixed_gerp_vcf:
     conda: "r_tidy"
     shell:
       """
-      Rscript --vanilla R/gerp_fixation_levels.R {input.tree} {output.pdf} {output.vcf} &>> {log}
+      Rscript --vanilla R/gerp_fixation_levels.R {input.tree} {output.pdf} {output.vcf} {output.maf} &>> {log}
       """
