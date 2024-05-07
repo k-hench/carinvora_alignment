@@ -14,6 +14,7 @@ vcf_out <- args[3]
 maf_out <- args[4]
 
 fnt_sel = "Arial"
+refspec <- "arcgaz"
 
 tree_anc <- read.tree(tree_in)
 all_tips <- sort(tree_anc$tip.label)
@@ -71,10 +72,13 @@ create_fixed_genotypes <- \(spec_in){
          GT = if_else(spec %in% spec_in, "1/1", "0/0")) |>
     pivot_wider(names_from = spec, values_from = GT)
   t2 <- tibble(spec = all_tips,
-               GT = if_else(spec %in% spec_in, "./.", "1/1")) |>
+               GT = if_else(spec %in% spec_in,
+                            if_else(spec == refspec, "0/0", "./."),
+                            "1/1")) |>
     pivot_wider(names_from = spec, values_from = GT)
   t3 <- tibble(spec = all_tips,
-               GT = if_else(spec %in% spec_in, "0/0", "./.")) |>
+               GT = if_else(spec %in% spec_in, "0/0",
+                            if_else(spec == refspec, "1/1", "./."))) |>
     pivot_wider(names_from = spec, values_from = GT)
   bind_rows(t1, t2, t3)
 }
@@ -82,7 +86,9 @@ create_fixed_genotypes <- \(spec_in){
 # helper function to create fasta sequence based on assignment to a clade
 create_fa <- \(spec_in){
   tibble(spec = all_tips,
-         fa = if_else(spec %in% spec_in, "TT-", "A-A")) |>
+         fa = if_else(spec %in% spec_in,
+                      if_else(spec == refspec, "TTT", "TT-"),
+                      if_else(spec == refspec, "AAA", "A-A"))) |>
     pivot_wider(names_from = spec, values_from = fa)
 }
 
@@ -146,16 +152,17 @@ maf_lines <- group_structure |>
   select(acijub:zalcal) |>
   summarise(across(acijub:zalcal, \(str){str_c(str, collapse = "")})) |>
   pivot_longer(cols = everything()) |>
-  mutate(maf_line = glue("s {name}.dummy 1 36 + {if_else(name=='arcgaz',36,24)} {value}"))
+  mutate(maf_line = glue("s {name}.dummy 1 36 + {if_else(name==refspec,36,24)} {value}"))
 
+maf_lines |> pluck("maf_line")
 # force arcgaz to be ref sequence (first entry in maf block)
 maf_lines |>
-  filter(name == "arcgaz") |>
+  filter(name == refspec) |>
   pluck("maf_line") |>
   write_lines(file = maf_out, append = TRUE)
 
 # append all non-arcgaz species
 maf_lines |>
-  filter(name != "arcgaz") |>
+  filter(name != refspec) |>
   pluck("maf_line") |>
   write_lines(file = maf_out, append = TRUE)
