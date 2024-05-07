@@ -23,7 +23,7 @@ localrules: extract_ancestral_tree, compile_fixed_gerp_vcf
 
 rule fixed_gerp:
     input:
-      gerp = "../results/fixed_gerp/fixed_gerp.vcf"
+      gerp = "../results/fixed_gerp/fixed_gerp.maf"
 
 
 rule extract_ancestral_tree:
@@ -43,6 +43,7 @@ rule compile_fixed_gerp_vcf:
       tree = "../results/fixed_gerp/anc.tree"
     output:
       vcf = "../results/fixed_gerp/fixed_gerp.vcf",
+      maf = "../results/fixed_gerp/fixed_gerp.maf",
       pdf = "../results/img/clades_tree.pdf"
     log: "logs/fixed_gerp_vcf.log"
     container: c_conda

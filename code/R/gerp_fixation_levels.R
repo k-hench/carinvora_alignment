@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-# Rscript --vanilla gerp_fixation_levels.R <anc.tree> <clade_tree.pdf> <out.vcf> <in_tree>
+# Rscript --vanilla gerp_fixation_levels.R <anc.tree> <clade_tree.pdf> <out.vcf> <out.maf>
 args <- commandArgs(trailingOnly = TRUE)
 print(args)
 
@@ -11,6 +11,7 @@ library(ggtree)
 tree_in <- args[1]
 pdf_out <- args[2]
 vcf_out <- args[3]
+maf_out <- args[4]
 
 fnt_sel = "Arial"
 
@@ -71,6 +72,13 @@ create_fixed_genotypes <- \(spec_in){
     pivot_wider(names_from = spec, values_from = GT)
 }
 
+# helper function to create fasta sequence based on assignment to a clade
+create_fa <- \(spec_in){
+  tibble(spec = all_tips,
+         fa = if_else(spec %in% spec_in, "T", "A")) |>
+    pivot_wider(names_from = spec, values_from = fa)
+}
+
 # compile the genotypes fixed within clades
 group_structure <- tibble(
   gr_idx = 0:12,
@@ -81,8 +89,8 @@ group_structure <- tibble(
                   9, c(11,12), 11, 12) ) |>
   left_join(group_labels) |>
   mutate(species = map(contains, extract_species_for_group),
-         genotypes = map(species, create_fixed_genotypes)
-         )
+         genotypes = map(species, create_fixed_genotypes),
+         fa = map(species, create_fa))
 
 # group_structure$species[[which(group_structure$gr_idx == 9)]]
 
@@ -115,3 +123,20 @@ group_structure |>
   write_tsv(file = vcf_out,
             col_names = FALSE,
             append = TRUE)
+
+# compiling the output maf file
+maf_head <- '##maf version=1 program=gerp_fixation_levels.R
+
+a'
+
+maf_head |> write_lines(file = maf_head)
+
+group_structure |>
+  filter(gr_idx > 0) |>
+  unnest(fa) |>
+  select(acijub:zalcal) |>
+  summarise(across(acijub:zalcal, \(str){str_c(str, collapse = "")})) |>
+  pivot_longer(cols = everything()) |>
+  mutate(maf_line = glue("s {name}.dummy 1 12 + 12 {value}")) |>
+  pluck("maf_line") |>
+  write_lines(file = maf_head, append = TRUE)
