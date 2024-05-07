@@ -333,9 +333,10 @@ rule call_gerp:
 
 GERP_COLUMNS = {"nr": 1, "rs": 2}
 
-# bed coordinates need to be shifted by 2 bp,
-# because bed is "left-open", and gerp rates
-# start at position 0 (-z parameter)
+# bed coordinates need to be shifted by 1 bp,
+# because bed is "left-open".
+# gerp rates start at position 0 (-z parameter),
+# but maf files also are also 0-indexed
 rule parse_gerp_beds:
     input:
       rates = "../results/maf/carnivora_set_{mscaf_nr}.maf.rates"
@@ -347,7 +348,7 @@ rule parse_gerp_beds:
     shell:
       """
       awk -v s="mscaf_a1_{wildcards.mscaf_nr}" \
-        '{{ print s"\t"NR-2"\t"NR-1"\t"${params.col_idx} }}' {input.rates} | \
+        '{{ print s"\t"NR-1"\t"NR"\t"${params.col_idx} }}' {input.rates} | \
         grep -v "\s0$" | \
         bgzip > {output.bed}
       """
