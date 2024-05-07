@@ -19,7 +19,7 @@ snakemake --jobs 50 \
         --jn job_c.{name}.{jobid}.sh \
         -R fixed_gerp
 """
-localrules: extract_ancestral_tree
+localrules: extract_ancestral_tree, compile_fixed_gerp_vcf
 
 rule fixed_gerp:
     input:
@@ -35,7 +35,7 @@ rule extract_ancestral_tree:
       txt = '../results/cactus/{name}.txt'.format(name = P_NAME)
     shell:
       """
-      head -n 1 {params.txt} > {out.tree}
+      head -n 1 {params.txt} > {output.tree}
       """
 
 rule compile_fixed_gerp_vcf:
