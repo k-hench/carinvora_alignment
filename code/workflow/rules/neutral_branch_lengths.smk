@@ -378,4 +378,3 @@ rule merge_all_gerp_beds:
       """
       zcat {input.beds} | bgzip > {output.bed}
       """
-

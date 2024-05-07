@@ -25,7 +25,7 @@ snakemake --jobs 50 \
         --jn job_c.{name}.{jobid}.sh \
         -R fixed_gerp
 """
-localrules: extract_ancestral_tree, compile_fixed_gerp_vcf, call_fixed_gerp, 
+localrules: extract_ancestral_tree, compile_fixed_gerp_vcf, call_fixed_gerp
 
 rule fixed_gerp:
     input:
