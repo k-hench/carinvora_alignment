@@ -5,10 +5,6 @@ print(args)
 
 library(tidyverse)
 library(glue)
-library(ggraph)
-library(tidygraph)
-library(patchwork)
-library(ggtext)
 library(ggtree)
 # head -n 1 carnivora_set.txt
 
