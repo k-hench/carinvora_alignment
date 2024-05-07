@@ -84,7 +84,7 @@ rule fixed_gerp_beds:
     shell:
       """
       awk -v s="dummy" \
-        '{{ print s"\t"NR-2"\t"NR-1"\t"${params.col_idx} }}' {input.rates} | \
+        '{{ print s"\t"NR-1"\t"NR"\t"${params.col_idx} }}' {input.rates} | \
         grep -v "\s0$" | \
         bgzip > {output.bed}
       """
