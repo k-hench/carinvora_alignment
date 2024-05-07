@@ -32,12 +32,26 @@ rule merge_mafs:
       maf = "../results/neutral_tree/windows/{mscaf}.maf.gz".format( mscaf = SCFS[0] ),
       mafs = expand( "../results/neutral_tree/windows/{mscaf}.maf.gz", mscaf = SCFS[1:17] )
     output:
-      maf = temp( "../results/phylop/autosomes.maf")
+      maf = "../results/neutral_tree/windows/autosomes.maf.gz"
+    params:
+      prefix = "../results/neutral_tree/windows/autosomes.maf"
     shell:
       """
-      zcat {input.maf}  > {output.maf}
+      zcat {input.maf}  > {params.prefix}
 
-      for k in {input.mafs}; do zcat ${{k}} | tail -n +2 >> {output.maf}; done
+      for k in {input.mafs}; do zcat ${{k}} | tail -n +2 >> {params.prefix}; done
+
+      gzip {params.prefix}
+      """
+
+rule unzip_autosome_maf:
+    input:
+       maf = "../results/neutral_tree/windows/autosomes.maf.gz"
+    output:
+      maf = temp( "../results/phylop/autosomes.maf" )
+    shell:
+      """
+      zcat {input.maf} > {output.maf}
       """
 
 rule phylop_model:
