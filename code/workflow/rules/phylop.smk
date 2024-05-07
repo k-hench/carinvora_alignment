@@ -29,7 +29,7 @@ rule all_phylop:
 
 rule merge_mafs:
     input:
-      maf = "../results/neutral_tree/windows/{mscaf}.maf.gz".format( SCFS[0] ),
+      maf = "../results/neutral_tree/windows/{mscaf}.maf.gz".format( mscaf = SCFS[0] ),
       mafs = expand( "../results/neutral_tree/windows/{mscaf}.maf.gz", mscaf = SCFS[1:17] )
     output:
       maf = "../results/neutral_tree/windows/autosomes.maf.gz"
