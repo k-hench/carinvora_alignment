@@ -129,7 +129,7 @@ maf_head <- '##maf version=1 program=gerp_fixation_levels.R
 
 a'
 
-maf_head |> write_lines(file = maf_head)
+maf_head |> write_lines(file = maf_out)
 
 group_structure |>
   filter(gr_idx > 0) |>
@@ -139,4 +139,4 @@ group_structure |>
   pivot_longer(cols = everything()) |>
   mutate(maf_line = glue("s {name}.dummy 1 12 + 12 {value}")) |>
   pluck("maf_line") |>
-  write_lines(file = maf_head, append = TRUE)
+  write_lines(file = maf_out, append = TRUE)
