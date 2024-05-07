@@ -146,7 +146,7 @@ maf_lines <- group_structure |>
   select(acijub:zalcal) |>
   summarise(across(acijub:zalcal, \(str){str_c(str, collapse = "")})) |>
   pivot_longer(cols = everything()) |>
-  mutate(maf_line = glue("s {name}.dummy 1 36 + 24 {value}"))
+  mutate(maf_line = glue("s {name}.dummy 1 36 + {if_else(name=='arcgaz',36,24)} {value}"))
 
 # force arcgaz to be ref sequence (first entry in maf block)
 maf_lines |>
