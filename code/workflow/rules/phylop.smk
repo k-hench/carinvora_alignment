@@ -64,7 +64,7 @@ rule extract_cds_by_scaff:
       gff = "../results/phylop/cds/cds_{mscaf}.gff"
     shell:
       """
-      zgrep {wildcards.mscaf} {input.gff} | \
+      zgrep "mscaf_a1_{wildcards.mscaf}" {input.gff} | \
         grep -w CDS > {output.gff}
       """
 
