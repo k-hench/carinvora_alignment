@@ -71,12 +71,26 @@ rule extract_cds_by_scaff:
       """
       grep "mscaf_a1_{wildcards.mscaf}" {input.gff} | \
         grep -w CDS | \
-        sed 's/{params.scf}/{params.refspec}.{params.scf}/g' > {output.gff}
+        sed 's/{params.scf}/{params.refspec}_{params.scf}/g' > {output.gff}
+      """
+
+# msa_view confuses "arcgaz.mscaf_a1_10" and "arcgaz.mscaf_a1_11"
+# I assume only the name up to the "." is considdered as identifier
+rule reformat_maf:
+    input:
+      maf = "../results/maf/carnivora_set_{mscaf}.maf"
+    output:
+      maf = temp( "../results/phylop/underscore_{mscaf}.maf" )
+    params:
+      refspec = SPEC_REF
+    shell:
+      """
+      sed 's/{params.refspec}\./{params.refspec}_/g' {input.maf} > {output.maf}
       """
 
 rule phylofit_extract_codons:
     input:
-      maf = "../results/maf/carnivora_set_{mscaf}.maf",
+      maf = "../results/phylop/underscore_{mscaf}.maf",
       gff = "../results/phylop/cds/cds_{mscaf}.gff"
     output:
       stats = "../results/phylop/sufficient_stats/mscaf_a1_{mscaf}_codons.ss"
