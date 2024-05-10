@@ -89,37 +89,47 @@ rule fixed_gerp_beds:
         bgzip > {output.bed}
       """
 
-rule fixed_phylop:
+rule call_phylop_fixed:
     input:
-      maf = "../results/fixed_gerp/fixed_gerp.maf",
+      maf =  "../results/fixed_gerp/fixed_gerp.maf",,
       model = "../results/phylop/autosomes_neutral.mod"
     output:
-      txt = "../results/fixed_gerp/fixed_phylop.txt.gz"
+      txt = "../results/fixed_gerp/phylop_raw/{score_type}.txt.gz"
+    log: "logs/phylop_fixed_{score_type}.log"
     params:
-      overlay = config[ 'img_phylop' ],
-      bind_paths = config[ 'singularity_bind_paths' ]
-    log: "logs/phylop_{mscaf_nr}.log"
+      mscaf = "dummy"
+    conda: "msa_phast"
     shell:
       """
-      PATH_UPDATE="PATH=/home/cactus/cactus_env/bin:/home/cactus/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/conda/envs/phast/bin"
+      phyloP \
+         --base-by-base \
+         --method {wildcards.score_type} \
+         --mode CONACC \
+         --msa-format MAF \
+         --log {log} \
+         --refidx 0 \
+         --chrom {params.mscaf} \
+         {input.model} {input.maf} | \
+         gzip > {output.txt}
+      """
 
-      apptainer exec \
-        --fakeroot --overlay {params.overlay}:ro \
-        --bind {params.bind_paths} \
-        --env "PATH=${{PATH_UPDATE}}" \
-         {c_cactus} \
-         phyloP \
-           --base-by-base \
-           --method LRT \
-           --method ACC \
-           --method NNEUT \
-           --method CONACC \
-           --method SCORE \
-           --method GERP \
-           --msa-format MAF \
-            --log {log} \
-            {input.model} {input.maf} | \
-            gzip > {output.txt}
+rule pylop_fixed_to_tsv:
+    input:
+      txt = "../results/fixed_gerp/phylop_raw/{score_type}.txt.gz"
+    output:
+      tsv = "../results/fixed_gerp/{score_type}.tsv.gz"
+    params:
+      mscaf = "dummy"
+    conda: "popgen_basics"
+    shell:
+      """
+      py/phylotxt2tsv \
+        --txt {input.txt} \
+        --drop-zeros \
+        --seqname {params.mscaf} | \
+        bgzip > {output.tsv}
+      
+      tabix -p bed {output.tsv}
       """
 
 rule bgzip_vcf:

@@ -20,12 +20,13 @@ snakemake --jobs 50 \
       -R all_phylop
 """
 
-localrules: merge_mafs, unzip_autosome_maf
+localrules: merge_mafs, unzip_autosome_maf, extract_cds_by_scaff
 
 rule all_phylop:
     input: 
       maf = "../results/neutral_tree/windows/autosomes.maf.gz",
-      model = "../results/phylop/autosomes_neutral.mod"
+      model = "../results/phylop/autosomes_neutral.mod",
+      scores = expand( "../results/phylop/{score_type}/{score_type}_{mscaf_nr}.tsv.gz", mscaf_nr = MSCAFS, score_type = [ "SPH", "LRT", "SCORE", "GERP" ] )
 
 rule merge_mafs:
     input:
@@ -54,31 +55,83 @@ rule unzip_autosome_maf:
       zcat {input.maf} > {output.maf}
       """
 
+rule extract_cds_by_scaff:
+    input:
+      gff = GFF_FILE
+    output:
+      gff = "../results/phylop/cds/cds_{mscaf}.gff"
+    shell:
+      """
+      zgrep {wildcards.mscaf} {input.gff} | \
+        grep -w CDS > {output.gff}
+      """
+
+rule pylofit_extract_codons:
+    input:
+      maf = "../results/maf/carnivora_set_{mscaf}.maf",
+      gff = "../results/phylop/cds/cds_{mscaf}.gff"
+    output:
+      stats = "../results/phylop/sufficient_stats/{mscaf}_codons.ss"
+    conda: "msa_phast"
+    shell:
+      """
+      msa_view \
+        {input.maf} \
+         --in-format MAF \
+         --4d \
+         --features {input.gff} > {output.stats}
+      """
+
+rule pylofit_extract_3rd_codons:
+    input:
+      stats = "../results/phylop/sufficient_stats/{mscaf}_codons.ss"
+    output:
+      sites = "../results/phylop/sufficient_stats/{mscaf}_sites.ss"
+    conda: "msa_phast"
+    shell:
+      """
+      msa_view \
+        {input.stats} \
+        --in-format SS \
+        --out-format SS \
+        --tuple-size 1 > {output.sites}
+      """
+
+rule phylofit_aggregate_sites:
+    input:
+      sites = expand( "../results/phylop/sufficient_stats/{mscaf}_sites.ss", mscaf = SCFS[0:17] )
+    output:
+      sites = "../results/phylop/sufficient_stats/all_4d_sites.ss"
+    params:
+      species = ",".join(SPEC_ALL)
+    conda: "msa_phast"
+    shell:
+      """
+      msa_view \
+        --unordered-ss \
+        --out-format SS \
+        --aggregate {params.species} \
+        {input.sites} > {output.sites}
+      """
+
 rule phylop_model:
     input:
-      maf = "../results/phylop/autosomes.maf",
+      sites = "../results/phylop/sufficient_stats/all_4d_sites.ss",
       tree = "../results/neutral_tree/rerooted.tree"
     output:
       model = "../results/phylop/autosomes_neutral.mod"
     log:
       "logs/phylofit.log"
-    params:
-      overlay = config[ 'img_phylop' ],
-      bind_paths = config[ 'singularity_bind_paths' ]
+    conda: "msa_phast"
     shell:
       """
-      PATH_UPDATE="PATH=/home/cactus/cactus_env/bin:/home/cactus/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/conda/envs/phast/bin"
-
-      apptainer exec \
-        --fakeroot --overlay {params.overlay}:ro \
-        --bind {params.bind_paths} \
-        --env "PATH=${{PATH_UPDATE}}" \
-         {c_cactus} \
-         phyloFit \
-           --tree {input.tree} \
-           --msa-format MAF \
-           --log {log} \
-           {input.maf} > {output.model}
+      phyloFit \
+        --tree {input.tree} \
+        --EM \
+        --subst-mod REV \
+        --msa-format SS \
+        --log {log} \
+        {input.maf} > {output.model}
       """
 
 rule call_phylop:
@@ -86,30 +139,40 @@ rule call_phylop:
       maf = "../results/maf/carnivora_set_{mscaf_nr}.maf",
       model = "../results/phylop/autosomes_neutral.mod"
     output:
-      rates = "../results/phylop/phylop_{mscaf_nr}.txt.gz"
+      txt = "../results/phylop/{score_type}/raw/{score_type}_{mscaf_nr}.txt.gz"
+    log: "logs/phylop_{score_type}_{mscaf_nr}.log"
     params:
-      overlay = config[ 'img_phylop' ],
-      bind_paths = config[ 'singularity_bind_paths' ]
-    log: "logs/phylop_{mscaf_nr}.log"
+      mscaf = "mscaf_a1_{mscaf_nr}"
+    conda: "msa_phast"
     shell:
       """
-      PATH_UPDATE="PATH=/home/cactus/cactus_env/bin:/home/cactus/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/conda/envs/phast/bin"
+      phyloP \
+         --base-by-base \
+         --method {wildcards.score_type} \
+         --mode CONACC \
+         --msa-format MAF \
+         --log {log} \
+         --refidx 0 \
+         --chrom {params.mscaf} \
+         {input.model} {input.maf} | \
+         gzip > {output.txt}
+      """
 
-      apptainer exec \
-        --fakeroot --overlay {params.overlay}:ro \
-        --bind {params.bind_paths} \
-        --env "PATH=${{PATH_UPDATE}}" \
-         {c_cactus} \
-         phyloP \
-           --base-by-base \
-           --method LRT \
-           --method ACC \
-           --method NNEUT \
-           --method CONACC \
-           --method SCORE \
-           --method GERP \
-           --msa-format MAF \
-            --log {log} \
-            {input.model} {input.maf} | \
-            gzip > {output.txt}
+rule pylop_to_tsv:
+    input:
+      txt = "../results/phylop/{score_type}/raw/{score_type}_{mscaf_nr}.txt.gz"
+    output:
+      tsv = "../results/phylop/{score_type}/{score_type}_{mscaf_nr}.tsv.gz"
+    params:
+      mscaf = "mscaf_a1_{mscaf_nr}"
+    conda: "popgen_basics"
+    shell:
+      """
+      py/phylotxt2tsv \
+        --txt {input.txt} \
+        --drop-zeros \
+        --seqname {params.mscaf} | \
+        bgzip > {output.tsv}
+      
+      tabix -p bed {output.tsv}
       """

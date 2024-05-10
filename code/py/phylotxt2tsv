@@ -1,0 +1,90 @@
+#!/usr/bin/env python
+# modified from the msa_pipeline (https://bitbucket.org/bucklerlab/msa_pipeline/src/master/workflow/scripts/phylopwig2bed.py)
+import sys
+import argparse
+import os.path
+
+# ANSI color escape codes
+COLOR_RED = "\033[91m"
+COLOR_ORANGE = "\033[93m"
+COLOR_RESET = "\033[0m"
+
+def phyloptxt2tsv(intxt,outbed, seqname, skip_zero=False):
+    '''
+    Convert phyloP base-by-base txt output to bed-like tsv format.
+    Checks if chrom matches input file name and if not
+    replaces txt chrom with specified input sequence name chrom to 
+    prevent phyloP stripping chrom name, e.g. after "." char.
+    The output is in tsv format, but used bed coordinates.
+    It therefore can be used to create bed files using
+    eg `cut -f 1,2,3,4 <file.tsv> > <file.bed>`.
+    This was done to be able to keep all scores/columns from the 
+    phylop output together in one place.
+    '''
+    full_chrom = seqname
+    with open(outbed,'a') as out:
+        with open(intxt,'r') as w:
+            # definition line
+            colline = next(w)
+            if(colline.startswith("#neutral mean")):
+                meta_info = colline.split()
+                nm = meta_info[3]
+                nv = meta_info[6]
+                colline = next(w)
+
+            cols = colline.split()
+            cols[0] = cols[0][1:]
+
+            # keep neutral info for SPH method
+            if 'nm' in locals():
+                cols[0] = cols[0] + "_(neutral_is_" + nm + ")"
+                cols[1] = cols[1] + "_(neutral_is_" + nv + ")"
+            print(*["#chrom","start","end"] + cols,sep="\t",file=out)
+            header = next(w)
+            # split on whitespace
+            header = header.split()
+            # strip leading "chrom="
+            chrom = header[1][6:]
+            
+            if chrom != full_chrom:
+                print(f"< {COLOR_ORANGE}WARNING:{COLOR_RESET} The specified sequence name `--seqname {COLOR_ORANGE}{full_chrom}{COLOR_RESET}` does not match >\n< the input sequence name from the phylop txt file 'chrom={COLOR_ORANGE}{chrom}{COLOR_RESET}'! >", file=sys.stderr)
+                chrom = full_chrom
+            # strip leading "start="
+            # and convert 1-indexed to 0-indexed BED position
+            bedstop = int(header[2][6:])
+            bedstart = bedstop - 1
+            for line in w:
+                line = line.strip()
+                if line.startswith("#"):
+                    continue
+                if line.startswith("fixedStep"):
+                    newheader = line.split()
+                    bedstop = int(newheader[2][6:])
+                    bedstart = bedstop - 1
+                    # chrom should never change
+                    # but just in case
+                    # chrom = newheader[1][6:]
+                else:
+                    vals = list(map(float, line.split()))
+                    if(skip_zero and cols[0] == "nneut" and vals[3] == 0.0):
+                        bedstop += 1
+                        bedstart += 1
+                        continue
+                    print(*[chrom,bedstart,bedstop] + vals,sep="\t",file=out)
+                    # assumes fixedstep and strepsize=1
+                    bedstop += 1
+                    bedstart += 1
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Convert txt files created by phylop to bed format using the start info from the header")
+    parser.add_argument('-t', '--txt', dest="txt_file",  required=True, help="input txt file")
+    parser.add_argument('-o', '--output', dest="output", default="/dev/stdout", help="Output bed file (default: stdout)")
+    parser.add_argument('-s', '--seqname', dest="seqname", default="dummy", help="sequence name to use for bed (default: dummy)")
+    parser.add_argument('-d', '--drop-zeros', dest="dropzero", action="store_true", help="drop RS scores of 0 (missing data)")
+    args = parser.parse_args()
+
+    phyloptxt2tsv(args.txt_file, args.output, args.seqname, args.dropzero)
+
+if __name__ == "__main__":
+    main()
