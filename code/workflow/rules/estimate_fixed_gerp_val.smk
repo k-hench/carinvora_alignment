@@ -29,7 +29,8 @@ localrules: extract_ancestral_tree, compile_fixed_gerp_vcf, call_fixed_gerp
 
 rule fixed_gerp:
     input:
-      gerp = "../results/fixed_gerp/fixed_gerp_annotated.vcf.gz"
+      gerp = "../results/fixed_gerp/fixed_gerp_annotated.vcf.gz",
+      phylop = expand( "../results/fixed_gerp/phylop_raw/{score_type}.txt.gz", score_type = PHYLOP_SCORES ) 
 
 rule extract_ancestral_tree:
     input:
@@ -91,7 +92,7 @@ rule fixed_gerp_beds:
 
 rule call_phylop_fixed:
     input:
-      maf =  "../results/fixed_gerp/fixed_gerp.maf",,
+      maf = "../results/fixed_gerp/fixed_gerp.maf",
       model = "../results/phylop/autosomes_neutral.mod"
     output:
       txt = "../results/fixed_gerp/phylop_raw/{score_type}.txt.gz"

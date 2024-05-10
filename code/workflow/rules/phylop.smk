@@ -22,11 +22,13 @@ snakemake --jobs 50 \
 
 localrules: merge_mafs, unzip_autosome_maf, extract_cds_by_scaff
 
+PHYLOP_SCORES = [ "SPH", "LRT", "SCORE", "GERP" ]
+
 rule all_phylop:
     input: 
       maf = "../results/neutral_tree/windows/autosomes.maf.gz",
       model = "../results/phylop/autosomes_neutral.mod",
-      scores = expand( "../results/phylop/{score_type}/{score_type}_{mscaf_nr}.tsv.gz", mscaf_nr = MSCAFS, score_type = [ "SPH", "LRT", "SCORE", "GERP" ] )
+      scores = expand( "../results/phylop/{score_type}/{score_type}_{mscaf_nr}.tsv.gz", mscaf_nr = MSCAFS, score_type = PHYLOP_SCORES )
 
 rule merge_mafs:
     input:
