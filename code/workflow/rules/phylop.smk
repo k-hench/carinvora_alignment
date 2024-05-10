@@ -57,18 +57,24 @@ rule unzip_autosome_maf:
       zcat {input.maf} > {output.maf}
       """
 
+# hal prefixes chrom names with species, this needs to be 
+# added to the gff seq names too for msa_view to match
 rule extract_cds_by_scaff:
     input:
       gff = GFF_FILE
     output:
       gff = "../results/phylop/cds/cds_{mscaf}.gff"
+    params:
+      scf = "mscaf_a1_{mscaf}",
+      refspec = SPEC_REF
     shell:
       """
       grep "mscaf_a1_{wildcards.mscaf}" {input.gff} | \
-        grep -w CDS > {output.gff}
+        grep -w CDS | \
+        sed 's/{params.scf}/{params.refspec}.{params.scf}/g' > {output.gff}
       """
 
-rule pylofit_extract_codons:
+rule phylofit_extract_codons:
     input:
       maf = "../results/maf/carnivora_set_{mscaf}.maf",
       gff = "../results/phylop/cds/cds_{mscaf}.gff"
@@ -84,7 +90,7 @@ rule pylofit_extract_codons:
          --features {input.gff} > {output.stats}
       """
 
-rule pylofit_extract_3rd_codons:
+rule phylofit_extract_3rd_codons:
     input:
       stats = "../results/phylop/sufficient_stats/{mscaf}_codons.ss"
     output:
