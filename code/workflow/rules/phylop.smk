@@ -70,22 +70,32 @@ rule extract_cds_by_scaff:
     shell:
       """
       grep "mscaf_a1_{wildcards.mscaf}" {input.gff} | \
-        grep -w CDS | \
-        sed 's/{params.scf}/{params.refspec}_{params.scf}/g' > {output.gff}
+        grep -w CDS > {output.gff}
       """
 
-# msa_view confuses "arcgaz.mscaf_a1_10" and "arcgaz.mscaf_a1_11"
-# I assume only the name up to the "." is considdered as identifier
+# we need to remove hits from scaffolds other than the target
+# one that made it into the maf file
 rule reformat_maf:
     input:
-      maf = "../results/maf/carnivora_set_{mscaf}.maf"
+      maf = "../results/maf/carnivora_set_{mscaf}.maf",
+      genome = "../data/genomes/arcGaz4_h1.genome"
     output:
+      scf_bed = temp( "../results/phylop/mascaf_a1_{mscaf}.bed"),
       maf = temp( "../results/phylop/underscore_{mscaf}.maf" )
     params:
-      refspec = SPEC_REF
+      ref_spec = SPEC_REF
+    conda: "biopython"
     shell:
       """
-      sed 's/{params.refspec}\./{params.refspec}_/g' {input.maf} > {output.maf}
+      grep "mscaf_a1_{wildcards.mscaf}" | \
+        awk '{{print $1"\t0\t"$2}}' > {output.scf_bed}
+      
+      py/intersect_maf_bed \
+        --maf {input.maf} \
+        --bed {output.scf_bed} \
+        --ref {params.ref_spec} \
+        --output /dev/stdout \
+        --min_overlap_length 1 > {output.maf}
       """
 
 rule phylofit_extract_codons:
