@@ -133,7 +133,7 @@ rule phylop_model:
         --subst-mod REV \
         --msa-format SS \
         --log {log} \
-        {input.maf} > {output.model}
+        {input.sites} > {output.model}
       """
 
 rule call_phylop:
