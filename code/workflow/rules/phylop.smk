@@ -87,7 +87,7 @@ rule reformat_maf:
     conda: "biopython"
     shell:
       """
-      grep "mscaf_a1_{wildcards.mscaf}" | \
+      grep "mscaf_a1_{wildcards.mscaf}" {input.genome} | \
         awk '{{print $1"\t0\t"$2}}' > {output.scf_bed}
       
       py/intersect_maf_bed \
