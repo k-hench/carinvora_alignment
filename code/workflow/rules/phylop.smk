@@ -70,7 +70,8 @@ rule extract_cds_by_scaff:
     shell:
       """
       grep "mscaf_a1_{wildcards.mscaf}" {input.gff} | \
-        grep -w CDS > {output.gff}
+        grep -w CDS | \
+        sed 's/{params.scf}/{params.refspec}.{params.scf}/g' > {output.gff}
       """
 
 # we need to remove hits from scaffolds other than the target
