@@ -73,7 +73,7 @@ rule pylofit_extract_codons:
       maf = "../results/maf/carnivora_set_{mscaf}.maf",
       gff = "../results/phylop/cds/cds_{mscaf}.gff"
     output:
-      stats = "../results/phylop/sufficient_stats/{mscaf}_codons.ss"
+      stats = "../results/phylop/sufficient_stats/mscaf_a1_{mscaf}_codons.ss"
     conda: "msa_phast"
     shell:
       """
