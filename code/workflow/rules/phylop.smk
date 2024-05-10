@@ -88,7 +88,7 @@ rule reformat_maf:
     shell:
       """
       grep "mscaf_a1_{wildcards.mscaf}" | \
-        awk '{{print $1"\t0\t"$2}}' > {output.scf_bed}
+        awk '{{print "{params.ref_spec}."$1"\t0\t"$2}}' > {output.scf_bed}
       
       py/intersect_maf_bed \
         --maf {input.maf} \
