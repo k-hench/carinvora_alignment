@@ -82,7 +82,7 @@ rule reformat_maf:
       genome = "../data/genomes/arcGaz4_h1.genome"
     output:
       scf_bed = temp( "../results/phylop/mascaf_a1_{mscaf}.bed"),
-      maf = temp( "../results/phylop/underscore_{mscaf}.maf" )
+      maf = temp( "../results/phylop/no_own_hits_{mscaf}.maf" )
     params:
       ref_spec = SPEC_REF
     conda: "biopython"
@@ -101,7 +101,7 @@ rule reformat_maf:
 
 rule phylofit_extract_codons:
     input:
-      maf = "../results/phylop/underscore_{mscaf}.maf",
+      maf = "../results/phylop/no_own_hits_{mscaf}.maf",
       gff = "../results/phylop/cds/cds_{mscaf}.gff"
     output:
       stats = "../results/phylop/sufficient_stats/mscaf_a1_{mscaf}_codons.ss"
@@ -153,6 +153,8 @@ rule phylop_model:
       tree = "../results/neutral_tree/rerooted.tree"
     output:
       model = "../results/phylop/autosomes_neutral.mod"
+    params:
+      mod_prefix = "../results/phylop/autosomes_neutral"
     log:
       "logs/phylofit.log"
     conda: "msa_phast"
@@ -164,12 +166,13 @@ rule phylop_model:
         --subst-mod REV \
         --msa-format SS \
         --log {log} \
-        {input.sites} > {output.model}
+        --out-root {params.prefix}
+        {input.sites}
       """
 
 rule call_phylop:
     input:
-      maf = "../results/maf/carnivora_set_{mscaf_nr}.maf",
+      maf = "../results/phylop/no_own_hits_{mscaf}.maf",
       model = "../results/phylop/autosomes_neutral.mod"
     output:
       txt = "../results/phylop/{score_type}/raw/{score_type}_{mscaf_nr}.txt.gz"
