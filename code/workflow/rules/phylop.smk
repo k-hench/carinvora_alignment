@@ -154,7 +154,7 @@ rule phylop_model:
     output:
       model = "../results/phylop/autosomes_neutral.mod"
     params:
-      mod_prefix = "../results/phylop/autosomes_neutral"
+      prefix = "../results/phylop/autosomes_neutral"
     log:
       "logs/phylofit.log"
     conda: "msa_phast"
