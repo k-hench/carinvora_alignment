@@ -172,7 +172,7 @@ rule phylop_model:
 
 rule call_phylop:
     input:
-      maf = "../results/phylop/no_own_hits_{mscaf}.maf",
+      maf = "../results/phylop/no_own_hits_{mscaf_nr}.maf",
       model = "../results/phylop/autosomes_neutral.mod"
     output:
       txt = "../results/phylop/{score_type}/raw/{score_type}_{mscaf_nr}.txt.gz"
