@@ -166,7 +166,7 @@ rule phylop_model:
         --subst-mod REV \
         --msa-format SS \
         --log {log} \
-        --out-root {params.prefix}
+        --out-root {params.prefix} \
         {input.sites}
       """
 
