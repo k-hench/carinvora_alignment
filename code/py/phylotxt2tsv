@@ -2,6 +2,7 @@
 # modified from the msa_pipeline (https://bitbucket.org/bucklerlab/msa_pipeline/src/master/workflow/scripts/phylopwig2bed.py)
 import sys
 import argparse
+import gzip
 import os.path
 
 # ANSI color escape codes
@@ -22,8 +23,10 @@ def phyloptxt2tsv(intxt,outbed, seqname, skip_zero=False):
     phylop output together in one place.
     '''
     full_chrom = seqname
-    with open(outbed,'a') as out:
-        with open(intxt,'r') as w:
+    opener_bed = gzip.open if outbed.endswith('.gz') else open
+    with opener_bed(outbed,'at') as out:
+        opener_txt = gzip.open if intxt.endswith('.gz') else open
+        with opener_txt(intxt,'rt') as w:
             # definition line
             colline = next(w)
             if(colline.startswith("#neutral mean")):
