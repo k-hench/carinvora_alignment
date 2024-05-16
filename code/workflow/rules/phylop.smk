@@ -237,7 +237,7 @@ rule phylop_collapse_gerp:
 
 rule phylop_gerp_bed:
     input:
-      bed = expand( "results/phylop/GERP/{{gerp_type}}/GERP_{mscaf_nr}_{{gerp_type}}.bed.gz", mscaf_nr = MSCAFS )
+      bed = expand( "../results/phylop/GERP/{{gerp_type}}/GERP_{mscaf_nr}_{{gerp_type}}.bed.gz", mscaf_nr = MSCAFS )
     output:
       bed = "../results/phylop/GERP/{gerp_type}/GERP_{gerp_type}.bed.gz"
     params:
