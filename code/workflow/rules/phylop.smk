@@ -28,7 +28,8 @@ rule all_phylop:
     input: 
       maf = "../results/neutral_tree/windows/autosomes.maf.gz",
       model = "../results/phylop/autosomes_neutral.mod",
-      scores = expand( "../results/phylop/{score_type}/{score_type}_{mscaf_nr}.tsv.gz", mscaf_nr = MSCAFS, score_type = PHYLOP_SCORES )
+      scores = expand( "../results/phylop/{score_type}/{score_type}_{mscaf_nr}.tsv.gz", mscaf_nr = MSCAFS, score_type = PHYLOP_SCORES ),
+      phlop_gerp_bed = expand( "../results/phylop/GERP/{gerp_type}/GERP_{gerp_type}.bed.gz", gerp_type = ["nr", "rs"] )
 
 rule merge_mafs:
     input:
@@ -211,4 +212,42 @@ rule pylop_to_tsv:
         bgzip > {output.tsv}
       
       tabix -p bed {output.tsv}
+      """
+
+PHYLOP_GERP_COLUMNS = {"nr": 4, "rs": 6}
+
+rule phylop_collapse_gerp:
+    input:
+      tsv = "../results/phylop/GERP/GERP_{mscaf_nr}.tsv.gz"
+    output:
+      bed = "../results/phylop/GERP/{gerp_type}/GERP_{mscaf_nr}_{gerp_type}.bed.gz"
+    params:
+      col_idx = lambda wc: GERP_COLUMNS[wc.gerp_type]
+    conda: "popgen_basics"
+    shell:
+      """
+      zcat {input.tsv} | \
+        cut -f 1-3,6 \
+        awk  -v OFS="\t" -f awk/collapse_table.awk | \
+        tail -n +2 | \
+        bgzip > {output.bed}
+      
+      tabix -p bed {output.bed}
+      """
+
+rule phylop_gerp_bed:
+    input:
+      bed = expand( "results/phylop/GERP/{gerp_type}/GERP_{mscaf_nr}_{{gerp_type}}.bed.gz", mscaf_nr = MSCAFS )
+    output:
+      bed = "../results/phylop/GERP/{gerp_type}/GERP_{gerp_type}.bed.gz"
+    params:
+      pre = "../results/phylop/GERP/{gerp_type}/GERP_{gerp_type}.bed"
+    conda: "popgen_basics"
+    shell:
+      """
+      for k in {input.bed}; do zcat ${{k}} >> {params.pre}; done 
+
+      bgzip {params.pre}
+      
+      tabix -p bed {output.bed}
       """
