@@ -239,15 +239,28 @@ rule phylop_gerp_bed:
     input:
       bed = expand( "../results/phylop/GERP/{{gerp_type}}/GERP_{mscaf_nr}_{{gerp_type}}.bed.gz", mscaf_nr = MSCAFS )
     output:
-      bed = "../results/phylop/GERP/{gerp_type}/phylop_gerp_{gerp_type}.bed.gz"
+      bed = "../results/phylop/GERP/{gerp_type}/phylop_gerp_{gerp_type}_raw.bed.gz"
     params:
-      pre = "../results/phylop/GERP/{gerp_type}/phylop_gerp_{gerp_type}.bed"
+      pre = "../results/phylop/GERP/{gerp_type}/phylop_gerp_{gerp_type}_raw.bed"
     conda: "popgen_basics"
     shell:
       """
       for k in {input.bed}; do zcat ${{k}} >> {params.pre}; done 
 
       bgzip {params.pre}
+      
+      tabix -p bed {output.bed}
+      """
+
+rule phylop_filter_bed:
+    input:
+      bed = "../results/phylop/GERP/{gerp_type}/phylop_gerp_{gerp_type}_raw.bed.gz"
+    output:
+      bed = "../results/phylop/GERP/{gerp_type}/phylop_gerp_{gerp_type}.bed.gz"
+    conda: "popgen_basics"
+    shell:
+      """
+      zgrep -v "\\s0.0$" {input.bed} | bgzip >  {output.bed}
       
       tabix -p bed {output.bed}
       """
