@@ -90,6 +90,9 @@ need_masking:
 #  - name
 #  - name2
 
+# exporting results to dedicated backup directory
+backup_path: "$AFS_BU_DIR"
+
 # local paths to stored sif files for offline usage:
 # apptainer pull docker://khench/popgen_suite:v0.2
 sif_popgen: '$CDATA/apptainer_local/popgen_suite_v0.2.sif'
