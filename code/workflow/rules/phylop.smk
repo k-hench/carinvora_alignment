@@ -29,7 +29,7 @@ rule all_phylop:
       maf = "../results/neutral_tree/windows/autosomes.maf.gz",
       model = "../results/phylop/autosomes_neutral.mod",
       scores = expand( "../results/phylop/{score_type}/{score_type}_{mscaf_nr}.tsv.gz", mscaf_nr = MSCAFS, score_type = PHYLOP_SCORES ),
-      phlop_gerp_bed = expand( "../results/phylop/GERP/{gerp_type}/GERP_{gerp_type}.bed.gz", gerp_type = ["nr", "rs"] )
+      phlop_gerp_bed = expand( "../results/phylop/GERP/{gerp_type}/phylop_gerp_{gerp_type}.bed.gz", gerp_type = ["nr", "rs"] )
 
 rule merge_mafs:
     input:
@@ -239,9 +239,9 @@ rule phylop_gerp_bed:
     input:
       bed = expand( "../results/phylop/GERP/{{gerp_type}}/GERP_{mscaf_nr}_{{gerp_type}}.bed.gz", mscaf_nr = MSCAFS )
     output:
-      bed = "../results/phylop/GERP/{gerp_type}/GERP_{gerp_type}.bed.gz"
+      bed = "../results/phylop/GERP/{gerp_type}/phylop_gerp_{gerp_type}.bed.gz"
     params:
-      pre = "../results/phylop/GERP/{gerp_type}/GERP_{gerp_type}.bed"
+      pre = "../results/phylop/GERP/{gerp_type}/phylop_gerp_{gerp_type}.bed"
     conda: "popgen_basics"
     shell:
       """

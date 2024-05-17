@@ -7,8 +7,8 @@ results/neutral_tree/rerooted.tree
 results/gerp/nr/gerp_nr.bed.gz
 results/gerp/rs/gerp_rs.bed.gz
 results/phylop/autosomes_neutral.mod
-results/phylop/GERP/nr/GERP_nr.bed.gz
-results/phylop/GERP/rs/GERP_rs.bed.gz
+results/phylop/GERP/nr/phylop_gerp_nr.bed.gz
+results/phylop/GERP/rs/phylop_gerp_rs.bed.gz
 results/fixed_gerp/anc.tree
 results/fixed_gerp/fixed_gerp.maf
 results/fixed_gerp/phylop_raw/GERP.txt.gz
