@@ -222,7 +222,7 @@ rule phylop_collapse_gerp:
     output:
       bed = "../results/phylop/GERP/{gerp_type}/GERP_{mscaf_nr}_{gerp_type}.bed.gz"
     params:
-      col_idx = lambda wc: GERP_COLUMNS[wc.gerp_type]
+      col_idx = lambda wc: PHYLOP_GERP_COLUMNS[wc.gerp_type]
     conda: "popgen_basics"
     shell:
       """
