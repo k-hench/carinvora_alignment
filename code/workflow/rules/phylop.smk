@@ -227,7 +227,7 @@ rule phylop_collapse_gerp:
     shell:
       """
       zcat {input.tsv} | \
-        cut -f 1-3,6 | \
+        cut -f 1-3,{params.col_idx} | \
         awk -v OFS="\t" -f awk/collapse_table.awk | \
         tail -n +2 | \
         bgzip > {output.bed}
