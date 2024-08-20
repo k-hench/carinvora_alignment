@@ -319,7 +319,7 @@ rule reroot_tree:
 rule call_gerp:
     input:
 #      maf = "../results/maf/{name}_{mscaf_nr}.maf",
-      maf = "../results/phylop/no_own_hits_{mscaf}.maf",
+      maf = "../results/phylop/no_own_hits_{mscaf_nr}.maf",
       tree = "../results/neutral_tree/rerooted.tree"
     output:
       rates = "../results/maf/{name}_{mscaf_nr}.maf.rates"
