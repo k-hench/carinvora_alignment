@@ -52,7 +52,7 @@ rule unzip_autosome_maf:
     input:
        maf = "../results/neutral_tree/windows/autosomes.maf.gz"
     output:
-      maf = temp( "../results/phylop/autosomes.maf" )
+      maf = "../results/phylop/autosomes.maf"
     shell:
       """
       zcat {input.maf} > {output.maf}
@@ -83,7 +83,7 @@ rule reformat_maf:
       genome = "../data/genomes/arcGaz4_h1.genome"
     output:
       scf_bed = temp( "../results/phylop/mascaf_a1_{mscaf}.bed"),
-      maf = temp( "../results/phylop/no_own_hits_{mscaf}.maf" )
+      maf = "../results/phylop/no_own_hits_{mscaf}.maf" 
     params:
       ref_spec = SPEC_REF
     conda: "biopython"
