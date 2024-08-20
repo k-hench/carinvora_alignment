@@ -322,7 +322,7 @@ rule call_gerp:
       maf = "../results/phylop/no_own_hits_{mscaf_nr}.maf",
       tree = "../results/neutral_tree/rerooted.tree"
     output:
-      rates = "../results/maf/{name}_{mscaf_nr}.maf.rates"
+      rates = "../results/gerp/{name}_{mscaf_nr}.maf.rates"
     params:
       refname = SPEC_REF 
     conda: "msa_phast"
@@ -340,7 +340,7 @@ GERP_COLUMNS = {"nr": 1, "rs": 2}
 # but maf files also are also 0-indexed
 rule parse_gerp_beds:
     input:
-      rates = "../results/maf/carnivora_set_{mscaf_nr}.maf.rates"
+      rates = "../results/gerp/carnivora_set_{mscaf_nr}.maf.rates"
     output:
       bed = "../results/gerp/{gerp_type}/mscaf_a1_{mscaf_nr}-gerp-{gerp_type}.bed.gz"
     conda: "popgen_basics"
