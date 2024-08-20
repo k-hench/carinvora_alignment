@@ -82,7 +82,7 @@ rule reformat_maf:
       maf = "../results/maf/carnivora_set_{mscaf}.maf",
       genome = "../data/genomes/arcGaz4_h1.genome"
     output:
-      scf_bed = temp( "../results/phylop/mascaf_a1_{mscaf}.bed"),
+      scf_bed = "../results/phylop/mascaf_a1_{mscaf}.bed",
       maf = "../results/phylop/no_own_hits_{mscaf}.maf" 
     params:
       ref_spec = SPEC_REF
