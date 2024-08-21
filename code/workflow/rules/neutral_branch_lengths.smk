@@ -330,6 +330,8 @@ rule call_gerp:
     shell:
       """
       gerpcol -t {input.tree} -f {input.maf} -e {params.refname} -j -z -x ".rates" &> {log}
+
+      mv {input.maf}.rates {output.rates}
       """
 
 GERP_COLUMNS = {"nr": 1, "rs": 2}
