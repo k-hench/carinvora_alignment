@@ -189,7 +189,7 @@ rule call_phylop:
          --mode CONACC \
          --msa-format MAF \
          --log {log} \
-         --refidx 0 \
+         --refidx 1 \
          --chrom {params.mscaf} \
          {input.model} {input.maf} | \
          gzip > {output.txt}
