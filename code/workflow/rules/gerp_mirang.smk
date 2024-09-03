@@ -75,7 +75,7 @@ rule hal_to_maf_mirang:
 rule reformat_maf_mirang:
     input:
       maf = "../results/mirang/maf/mirang_scaf_{mscaf}.maf",
-      genome = "../data/mirang/mirang_filt.fa.gz.fai"
+      fai = "../data/mirang/mirang_filt.fa.gz.fai"
     output:
       scf_bed = "../results/mirang/bed/mascaf_a1_{mscaf}.bed",
       maf = "../results/mirang/maf/mirang_no_own_hits_{mscaf}.maf" 
