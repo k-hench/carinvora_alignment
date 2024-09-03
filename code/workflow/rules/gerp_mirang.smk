@@ -32,7 +32,7 @@ def get_mir_scaf_name(wildcards):
 
 rule gerp_mirang:
     input:
-      ""
+      bed = "../results/mirang/gerp/mirang_RS.bed.gz"
 
 rule hal_to_maf_mirang:
     input:
