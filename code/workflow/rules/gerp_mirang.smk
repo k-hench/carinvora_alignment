@@ -101,11 +101,11 @@ rule call_gerp_mirang:
       maf = "../results/mirang/maf/mirang_no_own_hits_{mscaf}.maf",
       tree = "../results/neutral_tree/rerooted.tree"
     output:
-      rates = "../results/mirang/gerp/mirang_{mscaf_nr}.maf.rates"
+      rates = "../results/mirang/gerp/mirang_{mscaf}.maf.rates"
     params:
       refname = "mirang" 
     conda: "msa_phast"
-    log: "logs/mirang_gerp_{mscaf_nr}.log"
+    log: "logs/mirang_gerp_{mscaf}.log"
     shell:
       """
       gerpcol -t {input.tree} -f {input.maf} -e {params.refname} -j -z -x ".rates" &> {log}
