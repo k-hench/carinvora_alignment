@@ -22,7 +22,8 @@ snakemake --jobs 50 \
 
 localrules: merge_mafs, unzip_autosome_maf, extract_cds_by_scaff
 
-PHYLOP_SCORES = [ "SPH", "LRT", "SCORE", "GERP" ]
+# PHYLOP_SCORES = [ "SPH", "LRT", "SCORE", "GERP" ]
+PHYLOP_SCORES = [ "LRT", "SCORE", "GERP" ]
 
 rule all_phylop:
     input: 
