@@ -34,7 +34,7 @@ rule anc_pos:
     shell:
       """
       zcat {input.tsv} | \
-        awk '{{print $1"\t"$2"}}' | \
+        awk '{{print "$1"\t"$2"}}' | \
         bgzip > {output.tsv}
 
       tabix -s 1 -S 1 -b 2 -e 2 {output.tsv}
