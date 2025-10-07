@@ -70,6 +70,7 @@ include: "./rules/build_snpeff_db.smk"
 include: "./rules/phylop.smk"
 include: "./rules/estimate_fixed_gerp_val.smk"
 include: "./rules/gerp_mirang.smk"
+include: "./rules/arcgaz_anc_rates.smk"
 
 # conditional inclusion of repeat masking part
 if config[ 'need_masking' ] != None:

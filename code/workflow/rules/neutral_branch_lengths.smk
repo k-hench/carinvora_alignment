@@ -381,3 +381,14 @@ rule merge_all_gerp_beds:
       """
       zcat {input.beds} | bgzip > {output.bed}
       """
+
+rule index_gerp_bed:
+    input:
+      bed = 
+    output:
+      tsv = "../results/gerp/rs/gerp_rs.bed.gz.tbi"
+    conda: "popgen_basics"
+    shell:
+      """
+      tabix -p bed {input.bed}
+      """
