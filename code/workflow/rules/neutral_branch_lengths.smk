@@ -384,7 +384,7 @@ rule merge_all_gerp_beds:
 
 rule index_gerp_bed:
     input:
-      bed = 
+      bed = "../results/gerp/rs/gerp_rs.bed.gz"
     output:
       tsv = "../results/gerp/rs/gerp_rs.bed.gz.tbi"
     conda: "popgen_basics"

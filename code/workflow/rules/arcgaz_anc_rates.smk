@@ -1,5 +1,5 @@
 """
-snakemake -n -R ancarcgaz
+snakemake -n --rerun-triggers mtime -R ancarcgaz
 
 snakemake --jobs 50 \
     --latency-wait 30 \
