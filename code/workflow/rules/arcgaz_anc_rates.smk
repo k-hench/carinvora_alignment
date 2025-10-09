@@ -61,6 +61,4 @@ rule querry_anc_gerp:
       bedtools intersect -a {output.pre_bed} -b {output.bed} -wa -wb | \
         awk 'BEGIN{{print"chrom\tpos\trs"}}{{print $1"\t"$7"\t"$4}}' | \
         bgzip > {output.tsv}
-      
-      tabix -s 1 -S 1 -b 2 -e 2 {output.tsv}
       """
