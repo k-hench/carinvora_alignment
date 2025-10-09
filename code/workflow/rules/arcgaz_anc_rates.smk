@@ -53,13 +53,13 @@ rule querry_anc_gerp:
       """
       zcat {input.tsv} | \
         grep -v ^ref | \
-         awk '{print $1"\t"$2-1"\t"$2}'  | \
+         awk '{{print $1"\t"$2-1"\t"$2}}'  | \
         bgzip > {output.bed}
       
       tabix -R {output.bed} {input.bed} | bgzip > {output.pre_bed} 
 
       bedtools intersect -a {output.pre_bed} -b {output.bed} -wa -wb | \
-        awk 'BEGIN{print"chrom\tpos\trs"}{print $1"\t"$7"\t"$4}' | \
+        awk 'BEGIN{{print"chrom\tpos\trs"}}{{print $1"\t"$7"\t"$4}}' | \
         bgzip > {output.tsv}
       
       tabix -s 1 -S 1 -b 2 -e 2 {output.tsv}
