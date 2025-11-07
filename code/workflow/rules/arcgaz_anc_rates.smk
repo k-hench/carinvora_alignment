@@ -39,15 +39,13 @@ rule anc_pos:
       tabix -s 1 -S 1 -b 2 -e 2 {output.tsv}
       """
 
-rule querry_anc_gerp:
+rule snp_pos_to_bed:
     input:
       tsv = "../results/anc_allele/arcgaz_anc41_snp_pos.tsv.gz",
       bed = "../results/gerp/rs/gerp_rs.bed.gz",
       tbi = "../results/gerp/rs/gerp_rs.bed.gz.tbi"
     output:
-      bed = "../results/anc_allele/arcgaz_anc41_snp_pos.bed.gz",
-      pre_bed = "../results/anc_allele/arcgaz_anc41_snp_rs.pre_bed.gz",
-      tsv = "../results/anc_allele/arcgaz_anc41_snp_rs.tsv.gz"
+      bed = "../results/anc_allele/arcgaz_anc41_snp_pos.bed.gz"
     conda: "popgen_basics"
     shell:
       """
@@ -55,10 +53,29 @@ rule querry_anc_gerp:
         grep -v ^ref | \
          awk '{{print $1"\t"$2-1"\t"$2}}'  | \
         bgzip > {output.bed}
-      
-      tabix -R {output.bed} {input.bed} | bgzip > {output.pre_bed} 
+      """
 
-      bedtools intersect -a {output.pre_bed} -b {output.bed} -wa -wb | \
+rule attach_rs_to_bed:
+    input:
+      bed = "../results/gerp/rs/gerp_rs.bed.gz",
+      bed_pos = "../results/anc_allele/arcgaz_anc41_snp_pos.bed.gz"
+    output:
+      pre_bed = "../results/anc_allele/arcgaz_anc41_snp_rs.pre_bed.gz"
+    conda: "r_tidy"
+      """
+      # tabix -R {input.bed_pos} {input.bed} | bgzip > {output.pre_bed} 
+      Rscript --vanilla code/R/instersect_pos_rs.R
+      """
+
+rule querry_anc_gerp:
+    input:
+      bed = "../results/anc_allele/arcgaz_anc41_snp_pos.bed.gz",
+      pre_bed = "../results/anc_allele/arcgaz_anc41_snp_rs.pre_bed.gz"
+    output:
+      tsv = "../results/anc_allele/arcgaz_anc41_snp_rs.tsv.gz"
+    conda: "popgen_basics"
+      """
+      bedtools intersect -a {input.pre_bed} -b {input.bed} -wa -wb | \
         awk 'BEGIN{{print"chrom\tpos\trs"}}{{print $1"\t"$7"\t"$4}}' | \
         bgzip > {output.tsv}
       """
