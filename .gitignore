@@ -1,3 +1,6 @@
+# add option of local ghost files
+*_tmp.*
+
 # exclude hidden R profile files
 .Rproj.user
 

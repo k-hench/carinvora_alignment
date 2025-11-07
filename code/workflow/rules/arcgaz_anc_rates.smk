@@ -60,22 +60,22 @@ rule attach_rs_to_bed:
       bed = "../results/gerp/rs/gerp_rs.bed.gz",
       bed_pos = "../results/anc_allele/arcgaz_anc41_snp_pos.bed.gz"
     output:
-      pre_bed = "../results/anc_allele/arcgaz_anc41_snp_rs.pre_bed.gz"
+      tsv = "../results/anc_allele/arcgaz_anc41_snp_rs.tsv.gz"
     conda: "r_tidy"
       """
       # tabix -R {input.bed_pos} {input.bed} | bgzip > {output.pre_bed} 
       Rscript --vanilla code/R/instersect_pos_rs.R
       """
-
-rule querry_anc_gerp:
-    input:
-      bed = "../results/anc_allele/arcgaz_anc41_snp_pos.bed.gz",
-      pre_bed = "../results/anc_allele/arcgaz_anc41_snp_rs.pre_bed.gz"
-    output:
-      tsv = "../results/anc_allele/arcgaz_anc41_snp_rs.tsv.gz"
-    conda: "popgen_basics"
-      """
-      bedtools intersect -a {input.pre_bed} -b {input.bed} -wa -wb | \
-        awk 'BEGIN{{print"chrom\tpos\trs"}}{{print $1"\t"$7"\t"$4}}' | \
-        bgzip > {output.tsv}
-      """
+# 
+# rule querry_anc_gerp:
+#     input:
+#       bed = "../results/anc_allele/arcgaz_anc41_snp_pos.bed.gz",
+#       pre_bed = "../results/anc_allele/arcgaz_anc41_snp_rs.pre_bed.gz"
+#     output:
+#       tsv = "../results/anc_allele/arcgaz_anc41_snp_rs.tsv.gz"
+#     conda: "popgen_basics"
+#       """
+#       bedtools intersect -a {input.pre_bed} -b {input.bed} -wa -wb | \
+#         awk 'BEGIN{{print"chrom\tpos\trs"}}{{print $1"\t"$7"\t"$4}}' | \
+#         bgzip > {output.tsv}
+#       """
