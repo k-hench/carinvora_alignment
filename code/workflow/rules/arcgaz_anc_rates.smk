@@ -20,14 +20,14 @@ snakemake --jobs 50 \
         -R ancarcgaz
 """
 
-localrules: attach_rs_to_bed
+localrules: attach_rs_to_bed, parse_anc_gerp
 
 rule ancarcgaz:
     input:
       tsv = "../results/anc_allele/arcgaz_anc41_snp_rs.tsv.gz"
 
 rule rs_snp_merge:
-    input: "../results/anc_allele/arcgaz_anc41_snp_rs_wide.tsv.gz"
+    input: "../results/anc_allele/arcgaz_anc41_snp_rs.tsv.gz"
 
 rule anc_pos:
     input:
@@ -73,16 +73,15 @@ rule attach_rs_to_bed:
          bgzip > {output.tsv}
       """
 
-# rule querry_anc_gerp:
-#     input:
-#       bed = "../results/anc_allele/arcgaz_anc41_snp_pos.bed.gz",
-#       pre_bed = "../results/anc_allele/arcgaz_anc41_snp_rs.pre_bed.gz"
-#     output:
-#       tsv = "../results/anc_allele/arcgaz_anc41_snp_rs.tsv.gz"
-#     conda: "popgen_basics"
-#       """
-#       bedtools intersect -a {input.pre_bed} -b {input.bed} -wa -wb | \
-#         awk 'BEGIN{{print"chrom\tpos\trs"}}{{print $1"\t"$7"\t"$4}}' | \
-#         bgzip > {output.tsv}
-#       """
+rule parse_anc_gerp:
+    input:
+      tsv = "../results/anc_allele/arcgaz_anc41_snp_rs_wide.tsv.gz"
+    output:
+      tsv = "../results/anc_allele/arcgaz_anc41_snp_rs.tsv.gz"
+    conda: "popgen_basics"
+      """
+      zcat {input.tsv} | \
+        awk 'BEGIN{{print"chrom\tpos\trs"}}{{print $1"\t"$7"\t"$4}}' | \
+        bgzip > {output.tsv}
+      """
 
