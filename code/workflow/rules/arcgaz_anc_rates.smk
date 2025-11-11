@@ -20,6 +20,8 @@ snakemake --jobs 50 \
         -R ancarcgaz
 """
 
+localrules: attach_rs_to_bed
+
 rule ancarcgaz:
     input:
       tsv = "../results/anc_allele/arcgaz_anc41_snp_rs.tsv.gz"
@@ -60,11 +62,11 @@ rule attach_rs_to_bed:
       bed = "../results/gerp/rs/gerp_rs.bed.gz",
       bed_pos = "../results/anc_allele/arcgaz_anc41_snp_pos.bed.gz"
     output:
-      tsv = "../results/anc_allele/arcgaz_anc41_snp_rs.tsv.gz"
-    conda: "r_tidy"
+      tsv = "../results/anc_allele/arcgaz_anc41_snp_rs_wide.tsv.gz"
+    conda: "popgen_basics"
       """
-      # tabix -R {input.bed_pos} {input.bed} | bgzip > {output.pre_bed} 
-      Rscript --vanilla code/R/instersect_pos_rs.R
+       bedtools intersect -a {input.bed} -b {input.bed_pos} -wa -wb | \
+         bgzip > {output.tsv}
       """
 # 
 # rule querry_anc_gerp:
