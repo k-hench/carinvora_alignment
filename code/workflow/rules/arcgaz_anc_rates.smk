@@ -26,6 +26,9 @@ rule ancarcgaz:
     input:
       tsv = "../results/anc_allele/arcgaz_anc41_snp_rs.tsv.gz"
 
+rule rs_snp_merge:
+    input: "../results/anc_allele/arcgaz_anc41_snp_rs_wide.tsv.gz"
+
 rule anc_pos:
     input:
       tsv = "../results/anc_allele/arcgaz_anc41_snps.tsv.gz"
