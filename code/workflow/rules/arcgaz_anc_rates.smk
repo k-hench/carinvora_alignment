@@ -71,7 +71,7 @@ rule attach_rs_to_bed:
        bedtools intersect -a {input.bed} -b {input.bed_pos} -wa -wb | \
          bgzip > {output.tsv}
       """
-# 
+
 # rule querry_anc_gerp:
 #     input:
 #       bed = "../results/anc_allele/arcgaz_anc41_snp_pos.bed.gz",
@@ -84,3 +84,4 @@ rule attach_rs_to_bed:
 #         awk 'BEGIN{{print"chrom\tpos\trs"}}{{print $1"\t"$7"\t"$4}}' | \
 #         bgzip > {output.tsv}
 #       """
+
