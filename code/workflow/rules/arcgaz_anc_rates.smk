@@ -67,6 +67,7 @@ rule attach_rs_to_bed:
     output:
       tsv = "../results/anc_allele/arcgaz_anc41_snp_rs_wide.tsv.gz"
     conda: "popgen_basics"
+    shell:
       """
        bedtools intersect -a {input.bed} -b {input.bed_pos} -wa -wb | \
          bgzip > {output.tsv}
