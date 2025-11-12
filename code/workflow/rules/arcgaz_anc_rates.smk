@@ -76,6 +76,7 @@ rule parse_anc_gerp:
     output:
       tsv = "../results/anc_allele/arcgaz_anc41_snp_rs.tsv.gz"
     conda: "popgen_basics"
+    shell:
       """
       zcat {input.tsv} | \
         awk 'BEGIN{{print"chrom\tpos\trs"}}{{print $1"\t"$7"\t"$4}}' | \
