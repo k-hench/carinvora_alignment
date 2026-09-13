@@ -23,6 +23,7 @@ results/*
 # (explicitly define tracked files)
 data/*
 !data/carnivora_ref_genomes.tsv
+!data/carnivora_genome_and_timetree.tsv
 !data/carnivora_list.nwk
 !data/maffilter_templ.txt
 !data/maffilter_templ_maf.txt
