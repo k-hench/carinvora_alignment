@@ -1,5 +1,7 @@
 # Carnivora cactus alignment
 
+[![DOI](https://zenodo.org/badge/767047865.svg)](https://doi.org/10.5281/zenodo.23701524)
+
 **Author:** Kosmas Hench
 
 This repository contains the code for creating a reference free whole-genome alignment for Carnivora using `cactus` `🌵`, as well as the construction of a custom `SNPeff` data base for the reference genome of the Antarctic fur seal (*Arctocephalus gazella*, `arcGaz4_h1`, published in Hench *et al.* 2024).
