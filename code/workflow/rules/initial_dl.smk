@@ -33,8 +33,8 @@ snakemake --jobs 70 \
       -R ncbi_download && mv job.* logs/
 """
 
-WITH_CHICKEN = deepcopy( SPEC_ALL )
-WITH_CHICKEN.insert( 0, "galgal" )
+# WITH_CHICKEN = deepcopy( SPEC_ALL )
+# WITH_CHICKEN.insert( 0, "galgal" )
 
 rule ncbi_download:
     message:
@@ -45,7 +45,7 @@ rule ncbi_download:
       """
     input: 
       '../results/img/qc/genomes_n50.svg',
-      expand("../results/masking/{spec}_mask_check.tsv", spec = WITH_CHICKEN)
+      expand("../results/masking/{spec}_mask_check.tsv", spec = SPEC_ALL)
 
 rule only_download:
     message:
@@ -54,14 +54,14 @@ rule only_download:
       (which might be limmited on cluster batch-job nodes)
       """
     input: 
-      expand("../results/genomes/{spec}/{spec}.zip", spec = WITH_CHICKEN),
-      expand("../results/genome_stats/{spec}.tsv", spec = WITH_CHICKEN)
+      expand("../results/genomes/{spec}/{spec}.zip", spec = SPEC_ALL),
+      expand("../results/genome_stats/{spec}.tsv", spec = SPEC_ALL)
 
 checkpoint species_list:
     output: 
       species_list = "../data/carnivora_genome_and_timetree.tsv",
       short_label_tree = "../data/carnivora_short_labels.nwk",
-      list_incl_chicken = "../data/carnivora_and_chicken.tsv"
+      genome_list = "../data/carnivora_genome_and_timetree.tsv"
     log:
       "../code/logs/r_species_list.log"
     container: c_conda
@@ -69,7 +69,7 @@ checkpoint species_list:
     shell: 'Rscript R/compile_species_list.R 2> {log} 1> {log}'
 
 def get_accession(wildcards, what):
-    accessions = pd.read_table('../data/carnivora_and_chicken.tsv').set_index("spec", drop = False)
+    accessions = pd.read_table('../data/carnivora_genome_and_timetree.tsv').set_index("spec", drop = False)
     if what == 'name':
         return accessions.loc[wildcards.spec, 'organism_name']
     elif what == 'accession':
